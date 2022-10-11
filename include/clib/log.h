@@ -4,28 +4,31 @@
 #include <stdarg.h>
 #include <stdint.h>
 #include <stdbool.h>
+#include <string.h>
 #include <stdio.h>
 
-typedef enum { LOG_INFO, LOG_WARN, LOG_ERROR, LOG_FATAL } Log_Type;
+typedef enum { CLOG_INFO, CLOG_WARN, CLOG_ERROR, CLOG_FATAL } CLog_Type;
 
-void logger(Log_Type type, const char* file, uint32_t line, FILE* out, bool use_color, const char* format, ...);
+void c_log_impl(CLog_Type type, const char* file, uint32_t line, FILE* out, bool use_color, const char* format, ...);
+
+#define __FILENAME__ (strrchr(__FILE__, '/') ? strrchr(__FILE__, '/') + 1 : __FILE__)
 
 // log to stdout/stderr
-#define log_info(fmt, ...)  logger(LOG_INFO,  __FILE__, __LINE__, stdout, false, fmt, __VA_ARGS__)
-#define log_warn(fmt, ...)  logger(LOG_WARN,  __FILE__, __LINE__, stderr, false, fmt, __VA_ARGS__)
-#define log_error(fmt, ...) logger(LOG_ERROR, __FILE__, __LINE__, stderr, false, fmt, __VA_ARGS__)
-#define log_fatal(fmt, ...) logger(LOG_FATAL, __FILE__, __LINE__, stderr, false, fmt, __VA_ARGS__)
+#define c_log_info(fmt, ...)  c_log_impl(CLOG_INFO,  __FILENAME__, __LINE__, stdout, false, fmt, __VA_ARGS__)
+#define c_log_warn(fmt, ...)  c_log_impl(CLOG_WARN,  __FILENAME__, __LINE__, stderr, false, fmt, __VA_ARGS__)
+#define c_log_error(fmt, ...) c_log_impl(CLOG_ERROR, __FILENAME__, __LINE__, stderr, false, fmt, __VA_ARGS__)
+#define c_log_fatal(fmt, ...) c_log_impl(CLOG_FATAL, __FILENAME__, __LINE__, stderr, false, fmt, __VA_ARGS__)
 
 // colorful logging to stdout/stderr
-#define clog_info(fmt, ...)  logger(LOG_INFO,  __FILE__, __LINE__, stdout, true, fmt, __VA_ARGS__)
-#define clog_warn(fmt, ...)  logger(LOG_WARN,  __FILE__, __LINE__, stderr, true, fmt, __VA_ARGS__)
-#define clog_error(fmt, ...) logger(LOG_ERROR, __FILE__, __LINE__, stderr, true, fmt, __VA_ARGS__)
-#define clog_fatal(fmt, ...) logger(LOG_FATAL, __FILE__, __LINE__, stderr, true, fmt, __VA_ARGS__)
+#define c_clog_info(fmt, ...)  c_log_impl(CLOG_INFO,  __FILENAME__, __LINE__, stdout, true, fmt, __VA_ARGS__)
+#define c_clog_warn(fmt, ...)  c_log_impl(CLOG_WARN,  __FILENAME__, __LINE__, stderr, true, fmt, __VA_ARGS__)
+#define c_clog_error(fmt, ...) c_log_impl(CLOG_ERROR, __FILENAME__, __LINE__, stderr, true, fmt, __VA_ARGS__)
+#define c_clog_fatal(fmt, ...) c_log_impl(CLOG_FATAL, __FILENAME__, __LINE__, stderr, true, fmt, __VA_ARGS__)
 
 // log to file
-#define flog_info(out, fmt, ...)  logger(LOG_INFO,  __FILE__, __LINE__, out, false, fmt, __VA_ARGS__)
-#define flog_warn(out, fmt, ...)  logger(LOG_WARN,  __FILE__, __LINE__, out, false, fmt, __VA_ARGS__)
-#define flog_error(out, fmt, ...) logger(LOG_ERROR, __FILE__, __LINE__, out, false, fmt, __VA_ARGS__)
-#define flog_fatal(out, fmt, ...) logger(LOG_FATAL, __FILE__, __LINE__, out, false, fmt, __VA_ARGS__)
+#define c_flog_info(out, fmt, ...)  c_log_impl(CLOG_INFO,  __FILENAME__, __LINE__, out, false, fmt, __VA_ARGS__)
+#define c_flog_warn(out, fmt, ...)  c_log_impl(CLOG_WARN,  __FILENAME__, __LINE__, out, false, fmt, __VA_ARGS__)
+#define c_flog_error(out, fmt, ...) c_log_impl(CLOG_ERROR, __FILENAME__, __LINE__, out, false, fmt, __VA_ARGS__)
+#define c_flog_fatal(out, fmt, ...) c_log_impl(CLOG_FATAL, __FILENAME__, __LINE__, out, false, fmt, __VA_ARGS__)
 
 #endif // CLIB_LOG_H

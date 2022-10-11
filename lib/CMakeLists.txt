@@ -1,4 +1,4 @@
-set(target lib)
+set(target ${PROJECT_NAME})
 
 add_library(${target}
     clib.c
@@ -6,6 +6,7 @@ add_library(${target}
     log.c
     error.c
     unittest.c
+    list.c
 )
 
 target_include_directories(${target}

@@ -6,7 +6,7 @@
 static void __log_get_cur_time__(char* time_buf, size_t time_buf_size);
 
 void
-logger(Log_Type type, const char* file, uint32_t line, FILE* out, bool use_color, const char* format, ...)
+c_log_impl(CLog_Type type, const char* file, uint32_t line, FILE* out, bool use_color, const char* format, ...)
 {
     assert(type < 4);
 

@@ -16,7 +16,7 @@ typedef struct CError {
 CError
 c_error_get();
 
-bool
-c_error_set(const char* msg, u32 msg_size, i32 code);
+void
+c_error_set(i32 code, const char* msg, u32 msg_size);
 
 #endif // CLIB_ERROR_H

@@ -3,6 +3,8 @@ pkgs.mkShell {
   buildInputs = with pkgs; [
     cmake
     gdb
+    ninja
+    valgrind
   ];
 
   shellHook = ''

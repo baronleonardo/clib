@@ -1,5 +1,6 @@
 #include <clib/error.h>
 #include <clib/config.h>
+#include <clib/log.h>
 
 #include <string.h>
 
@@ -28,8 +29,8 @@ c_error_get()
     }
 }
 
-bool
-c_error_set(const char* msg, u32 msg_size, i32 code)
+void
+c_error_set(i32 code, const char* msg, u32 msg_size)
 {
     void* copy_status = memcpy(__cerror_msg__, msg, msg_size);
     if(copy_status)
@@ -37,8 +38,9 @@ c_error_set(const char* msg, u32 msg_size, i32 code)
         __cerror_is_old_error__ = false;
         __cerror_msg_size__ = msg_size;
         __cerror_code__ = code;
-        return true;
     }
-    
-    return false;
+    else
+    {
+        c_log_fatal("%s", "Failed to set error due to memcpy error");
+    }
 }

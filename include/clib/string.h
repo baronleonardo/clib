@@ -24,7 +24,7 @@ c_string_find(CString* self, CString* token);
 i64
 c_string_find_char(CString* self, CChar* ch);
 
-void
-c_string_free(CString* self);
+// void
+// c_string_free(CString* self);
 
 #endif // CLIB_STRING_H

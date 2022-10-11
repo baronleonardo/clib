@@ -15,9 +15,9 @@ c_string_new(char* buf, u32 size)
         .len = __c_string_get_len__(buf, size),
     };
 
-    if(str.valid)
+    if(!str.valid)
     {
-        log_fatal("%s", "Empty Buf");
+        c_log_fatal("%s", "Empty Buf");
         abort();
     }
 
@@ -28,7 +28,7 @@ i64
 c_string_find(CString* self, CString* token)
 {
     /// @TODO: Implement
-    log_fatal("%s", "Not implemented");
+    c_log_fatal("%s", "Not implemented");
     abort();
 }
 
@@ -36,20 +36,20 @@ i64
 c_string_find_char(CString* self, CChar* ch)
 {
     /// @TODO: Implement
-    log_fatal("%s", "Not implemented");
+    c_log_fatal("%s", "Not implemented");
     abort();
 }
 
-void
-c_string_free(CString* self)
-{
-    if(self)
-    {
-        if(self->valid) free(self->buf);
-        self->size = 0;
-        self->len = 0;
-    }
-}
+// void
+// c_string_free(CString* self)
+// {
+//     if(self)
+//     {
+//         if(self->valid) free(self->buf);
+//         self->size = 0;
+//         self->len = 0;
+//     }
+// }
 
 ///////////////////////////////////////////////////////////////////
 
