@@ -40,6 +40,6 @@ void c_list_make_space_impl(void** self);
 void c_list_set_capacity_impl(void** self, u32 new_capacity);
 void c_list_free_impl(void** self);
 void c_list_pop_validation_impl(void* self);
-void c_list_get_validation_impl(void* self);
+void c_list_get_validation_impl(void* self, u32 index);
 
 #endif // CLIB_LIST_H
