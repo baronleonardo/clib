@@ -7,6 +7,7 @@ add_library(${target}
     error.c
     unittest.c
     list.c
+    file.c
 )
 
 target_include_directories(${target}
