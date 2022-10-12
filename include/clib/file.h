@@ -9,7 +9,7 @@ typedef struct CFile {
     union
     {
         bool valid;
-        FILE* handler;
+        FILE* stream;
     };
 } CFile;
 
@@ -29,13 +29,13 @@ typedef struct CFile {
  */
 
 CFile
-c_file_open(CString* path, const char* mode);
+c_file_open(cstr path, cstr mode);
 
 uchar
 c_file_read(CFile* self);
 
 u32
-c_file_readline(CFile* self, CString);
+c_file_readline(CFile* self, cstr buf);
 
 void
 c_file_close(CFile* self);
