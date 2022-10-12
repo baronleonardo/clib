@@ -16,7 +16,7 @@ c_error_get()
     {
         CError err = {
             .code = __cerror_code__,
-            .msg = c_string_new(__cerror_msg__, __cerror_msg_size__)
+            .msg = c_string_new_from_buf(__cerror_msg__, __cerror_msg_size__)
         };
 
         __cerror_is_old_error__ = true;
@@ -41,6 +41,6 @@ c_error_set(i32 code, const char* msg, u32 msg_size)
     }
     else
     {
-        c_log_fatal("%s", "Failed to set error due to memcpy error");
+        c_log(fatal)("Failed to set error due to memcpy error", "");
     }
 }

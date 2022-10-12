@@ -107,7 +107,6 @@ c_test_register_impl(CUnit_Test* self, c_test_case_handler handler, const char* 
 
     self->test_cases[self->test_cases_num] = test_case;
     self->test_cases_num++;
-    self->cases_positive++;
 }
 
 void __c_test_on_fatal_error__(CUnit_Test* self, int sig_number)
@@ -176,6 +175,7 @@ c_test_run(CUnit_Test* self)
 
     if(self->targeted_test_case_name)
     {
+        self->cases_positive = 1;
         for(uint32_t iii = 0; iii < self->test_cases_num; iii++)
         {
             if(strcmp(self->targeted_test_case_name, self->test_cases[iii].name) == 0)
@@ -187,6 +187,7 @@ c_test_run(CUnit_Test* self)
     }
     else
     {
+        self->cases_positive = self->test_cases_num;
         for(uint32_t iii = 0; iii < self->test_cases_num; iii++)
         {
             self->current_test_case_index = iii;

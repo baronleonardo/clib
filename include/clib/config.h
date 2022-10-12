@@ -4,5 +4,6 @@
 // Error
 #define ERROR_MSG_LEN       250
 #define ERROR_MEM_ALLOC     "Memory re/allocation failed!"
+#define c_log(type)         c_clog_##type
 
 #endif // CLIB_CONFIG_H
