@@ -30,10 +30,16 @@ c_string_copy(cstr self);
 u32
 c_string_len(cstr self);
 
+u32
+c_string_capacity(cstr self);
+
 /// @brief use this function to update `self` with the new length
 ///        if you manipulated the string externally (like using `string.h` functions)
 void
-c_string_update_len(cstr self, u32 new_len);
+c_string_update_len(cstr self);
+
+bool
+c_string_equal(cstr str1, cstr str2);
 
 i64
 c_string_find(cstr self, char* token);

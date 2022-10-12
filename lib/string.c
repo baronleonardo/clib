@@ -67,10 +67,19 @@ c_string_len(cstr self)
     return cstring_header->str_len;
 }
 
-void
-c_string_update_len(cstr self, u32 new_len)
+u32
+c_string_capacity(cstr self)
 {
     CString* cstring_header = (CString*)self - 1;
+    return cstring_header->size - sizeof(CString) - 1;
+}
+
+void
+c_string_update_len(cstr self)
+{
+    CString* cstring_header = (CString*)self - 1;
+    u32 new_len = strlen(self);
+
     if(cstring_header->size - sizeof(CString) - 1 > new_len)
     {
         cstring_header->str_len = new_len;
@@ -80,6 +89,18 @@ c_string_update_len(cstr self, u32 new_len)
         const char* msg = "Error: `new_len` is less the size of the string";
         c_error_set('s', msg, strlen(msg));
     }
+}
+
+bool
+c_string_equal(cstr str1, cstr str2)
+{
+    c_assert_debug(str1, "");
+    c_assert_debug(str2, "");
+
+    /// @todo reimplement
+    int comparison = strcmp(str1, str2);
+
+    return comparison == 0 ? true : false;
 }
 
 i64
