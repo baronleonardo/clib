@@ -8,7 +8,7 @@
 typedef struct CError {
     union {
         bool valid;
-        CString msg;
+        cstr msg;
     };
     i32 code;
 } CError;

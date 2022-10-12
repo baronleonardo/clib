@@ -1,55 +1,113 @@
 #include <clib/string.h>
 #include <clib/log.h>
+#include <clib/assert.h>
+#include <clib/config.h>
+#include <clib/error.h>
 
 #include <stdlib.h>
+
+typedef struct CString {
+    u32 size; // including header and zero terminated
+    u32 str_len;
+} CString;
 
 /// Private
 static u32 __c_string_get_len__(const char* buf, u32 size);
 
-CString
-c_string_new(char* buf, u32 size)
+cstr
+c_string_new(u32 size)
 {
-    CString str = {
-        .buf = buf,
-        .size = size,
-        .len = __c_string_get_len__(buf, size),
-    };
+    CString* cstring_header = malloc(sizeof(CString) + size + 1);
+    c_assert(cstring_header, ERROR_MEM_ALLOC);
+    cstring_header->size = sizeof(CString) + size + 1;
 
-    if(!str.valid)
+    cstr cstr_buf = (cstr)(cstring_header + 1);
+    cstring_header->str_len = 0;
+
+    cstr_buf[0] = '\0';
+
+    return cstr_buf;
+}
+
+cstr
+c_string_new_from_buf(const char* buf, u32 size)
+{
+    CString* cstring_header = malloc(sizeof(CString) + size + 1);
+    c_assert(cstring_header, ERROR_MEM_ALLOC);
+    cstring_header->size = sizeof(CString) + size + 1;
+
+    cstr cstr_buf = (cstr)(cstring_header + 1);
+
+    void* mem_copy_status = memcpy(cstr_buf, buf, size);
+    c_assert(mem_copy_status, ERROR_MEM_ALLOC);
+    cstring_header->str_len = size;
+
+    cstr_buf[size] = '\0';
+
+    return cstr_buf;
+}
+
+cstr
+c_string_copy(cstr self)
+{
+    CString* old_cstring_header = (CString*)self - 1;
+    CString* new_cstring_header = malloc(old_cstring_header->size);
+    c_assert(new_cstring_header, ERROR_MEM_ALLOC);
+
+    void* mem_copy_status = memcpy(new_cstring_header, old_cstring_header, old_cstring_header->size);
+    c_assert(mem_copy_status, ERROR_MEM_ALLOC);
+
+    return (cstr)(new_cstring_header + 1);
+}
+
+u32
+c_string_len(cstr self)
+{
+    CString* cstring_header = (CString*)self - 1;
+    return cstring_header->str_len;
+}
+
+void
+c_string_update_len(cstr self, u32 new_len)
+{
+    CString* cstring_header = (CString*)self - 1;
+    if(cstring_header->size - sizeof(CString) - 1 > new_len)
     {
-        c_log_fatal("%s", "Empty Buf");
-        abort();
+        cstring_header->str_len = new_len;
+    }
+    else
+    {
+        const char* msg = "Error: `new_len` is less the size of the string";
+        c_error_set('s', msg, strlen(msg));
+    }
+}
+
+i64
+c_string_find(cstr self, char* token)
+{
+    c_log(fatal)("not implementd!", "");
+    abort();
+}
+
+i64
+c_string_find_char(cstr self, CChar* ch)
+{
+    c_log(fatal)("not implementd!", "");
+    abort();
+}
+
+cstr
+c_string_free(cstr self)
+{
+    if(self)
+    {
+        CString* cstring_header = (CString*)self - 1;
+        free(cstring_header);
+        self = null;
     }
 
-    return str;
+    return self;
 }
-
-i64
-c_string_find(CString* self, CString* token)
-{
-    /// @TODO: Implement
-    c_log_fatal("%s", "Not implemented");
-    abort();
-}
-
-i64
-c_string_find_char(CString* self, CChar* ch)
-{
-    /// @TODO: Implement
-    c_log_fatal("%s", "Not implemented");
-    abort();
-}
-
-// void
-// c_string_free(CString* self)
-// {
-//     if(self)
-//     {
-//         if(self->valid) free(self->buf);
-//         self->size = 0;
-//         self->len = 0;
-//     }
-// }
 
 ///////////////////////////////////////////////////////////////////
 
