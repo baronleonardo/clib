@@ -47,6 +47,8 @@ c_test_init(size_t max_test_cases, int argc, const char** argv)
         .test_cases = aligned_alloc(alignof(Test_Case), sizeof(Test_Case) * max_test_cases)
     };
 
+    unit_test.cases_positive = unit_test.cases_negative = unit_test.checks_negative = unit_test.checks_positive = 0;
+
     if(argc > 1)
     {
         unit_test.targeted_test_case_name = argv[1];
@@ -175,13 +177,14 @@ c_test_run(CUnit_Test* self)
 
     if(self->targeted_test_case_name)
     {
-        self->cases_positive = 1;
         for(uint32_t iii = 0; iii < self->test_cases_num; iii++)
         {
             if(strcmp(self->targeted_test_case_name, self->test_cases[iii].name) == 0)
             {
                 self->current_test_case_index = iii;
                 self->test_cases[iii].handler(self);
+                self->cases_positive = 1;
+                break;
             }
         }
     }
