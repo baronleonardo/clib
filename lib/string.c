@@ -103,6 +103,97 @@ c_string_equal(cstr str1, cstr str2)
     return comparison == 0 ? true : false;
 }
 
+void
+c_string_trim(cstr self, const char* chars, u32 chars_len)
+{
+    c_string_rtrim(self, chars, chars_len);
+    c_string_ltrim(self, chars, chars_len);
+}
+
+void
+c_string_trim_whitespaces(cstr self)
+{
+    u32 cstr_whitespaces_len = strlen(cstr_whitespaces);
+    c_string_rtrim(self, cstr_whitespaces, cstr_whitespaces_len);
+    c_string_ltrim(self, cstr_whitespaces, cstr_whitespaces_len);
+}
+
+void
+c_string_ltrim(cstr self, const char* chars, u32 chars_len)
+{
+    bool found = false;
+    i64 last_trim_index = -1;
+    u32 str_len = c_string_len(self);
+
+    for(u32 iii = 0; iii < str_len; ++iii)
+    {
+        found = false;
+
+        // check if current char is from `chars`
+        for(u32 ch = 0; ch < chars_len; ++ch)
+        {
+            if(self[iii] == chars[ch])
+            {
+                self[iii] = '\0';
+                found = true;
+                last_trim_index = iii + 1;
+                continue;
+            }
+        }
+        if(!found) break;
+    }
+
+    if(last_trim_index > 0)
+    {
+        memmove(self, &self[last_trim_index], str_len - last_trim_index + 1);
+        c_string_update_len(self);
+    }
+}
+
+void
+c_string_ltrim_whitespaces(cstr self)
+{
+    u32 cstr_whitespaces_len = strlen(cstr_whitespaces);
+    c_string_ltrim(self, cstr_whitespaces, cstr_whitespaces_len);
+}
+
+void
+c_string_rtrim(cstr self, const char* chars, u32 chars_len)
+{
+    bool found = false;
+    bool is_trimmed = false;
+
+    for(u32 iii = c_string_len(self) - 1; iii >= 0; --iii)
+    {
+        found = false;
+
+        // check if current char is from `chars`
+        for(u32 ch = 0; ch < chars_len; ++ch)
+        {
+            if(self[iii] == chars[ch])
+            {
+                self[iii] = '\0';
+                found = true;
+                is_trimmed = true;
+                continue;
+            }
+        }
+        if(!found) break;
+    }
+
+    if(is_trimmed)
+    {
+        c_string_update_len(self);
+    }
+}
+
+void
+c_string_rtrim_whitespaces(cstr self)
+{
+    u32 cstr_whitespaces_len = strlen(cstr_whitespaces);
+    c_string_rtrim(self, cstr_whitespaces, cstr_whitespaces_len);
+}
+
 i64
 c_string_find(cstr self, char* token)
 {

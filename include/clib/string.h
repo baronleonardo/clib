@@ -18,6 +18,8 @@
 
 typedef char* cstr;
 
+#define cstr_whitespaces " \t\n\v\f\r"
+
 cstr
 c_string_new(u32 size);
 
@@ -40,6 +42,24 @@ c_string_update_len(cstr self);
 
 bool
 c_string_equal(cstr str1, cstr str2);
+
+void
+c_string_trim(cstr self, const char* chars, u32 chars_len);
+
+void
+c_string_trim_whitespaces(cstr self);
+
+void
+c_string_ltrim(cstr self, const char* chars, u32 chars_len);
+
+void
+c_string_ltrim_whitespaces(cstr self);
+
+void
+c_string_rtrim(cstr self, const char* chars, u32 chars_len);
+
+void
+c_string_rtrim_whitespaces(cstr self);
 
 i64
 c_string_find(cstr self, char* token);
