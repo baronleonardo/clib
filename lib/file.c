@@ -3,6 +3,7 @@
 #include <clib/error.h>
 
 #include <string.h>
+#include <errno.h>
 
 static bool is_cpu_little_endian();
 
@@ -16,8 +17,7 @@ c_file_open(cstr path, cstr mode)
     file.stream = fopen(path, mode);
     if(!file.stream)
     {
-        const char* msg = "Error: Can't open the input path";
-        c_error_set('f', msg, sizeof(msg) - 1);
+        c_error_set(errno, "Error: Can't open the input path");
     }
 
     return file;
@@ -27,7 +27,14 @@ uchar
 c_file_readchar(CFile* self)
 {
     c_assert_debug(self, "");
-    return fgetc(self->stream);
+    i32 read_status = fgetc(self->stream);
+
+    if(read_status == EOF)
+    {
+        c_error_set(ferror(self->stream), "Couldn't read from file");
+    }
+
+    return read_status;
 }
 
 u32
@@ -48,14 +55,33 @@ c_file_readline(CFile* self, cstr buf)
     }
 }
 
-void
+bool
 c_file_writechar(CFile* self, uchar ch)
 {
+    c_assert_debug(self, "");
 
+    i32 write_status = fputc(ch, self->stream);
+
+    if(write_status == EOF)
+    {
+        c_error_set(ferror(self->stream), "Couldn't write to file");
+        return false;
+    }
+
+    return true;
 }
 
-void
+bool
 c_file_writeline(CFile* self, cstr line)
+{
+    c_assert_debug(self, "");
+    c_assert_debug(line, "");
+
+    fwrite(line, 1, c_string_len(line), self->stream);
+}
+
+bool
+c_file_seek(CFile* self, u32 pos)
 {
 
 }
@@ -73,6 +99,9 @@ c_file_close(CFile* self)
 u32
 c_file_read_impl(CFile* self, void* buf, u32 element_size, u32 elements_num, bool append_zero)
 {
+    c_assert_debug(self, "");
+    c_assert_debug(buf, "");
+
     u32 chars_read = fread(buf, element_size, elements_num, self->stream);
 
     if(is_cpu_little_endian && element_size != 1)
@@ -95,9 +124,12 @@ c_file_read_impl(CFile* self, void* buf, u32 element_size, u32 elements_num, boo
     return chars_read;
 }
 
-u32
+bool
 c_file_write_impl(CFile* self, void* buf, u32 element_size, u32 elements_num)
 {
+    c_assert_debug(self, "");
+    c_assert_debug(buf, "");
+
     if(is_cpu_little_endian && element_size != 1)
     {
         for(u32 iii = 0; iii < elements_num; iii++)
@@ -111,6 +143,11 @@ c_file_write_impl(CFile* self, void* buf, u32 element_size, u32 elements_num)
     }
 
     u32 written_chars = fwrite(buf, element_size, elements_num, self->stream);
+
+    if(written_chars == EOF)
+    {
+        c_error_set(ferror(self->stream), "Couldn't write to file");
+    }
 
     return written_chars;
 }

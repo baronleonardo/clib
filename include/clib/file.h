@@ -43,11 +43,14 @@ c_file_readline(CFile* self, cstr buf);
 ///        take a copy of it first if you want to keep it
 #define c_file_write(self, buf, buf_len) c_file_write_impl(self, buf, sizeof(buf[0]), buf_len)
 
-void
+bool
 c_file_writechar(CFile* self, uchar ch);
 
-void
+bool
 c_file_writeline(CFile* self, cstr line);
+
+bool
+c_file_seek(CFile* self, u32 pos);
 
 void
 c_file_close(CFile* self);
@@ -57,7 +60,7 @@ c_file_close(CFile* self);
 u32
 c_file_read_impl(CFile* self, void* buf, u32 element_size, u32 elements_num, bool append_zero);
 
-u32
+bool
 c_file_write_impl(CFile* self, void* buf, u32 element_size, u32 elements_num);
 
 #endif
