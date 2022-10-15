@@ -26,13 +26,16 @@ void c_test_string_new(CUnit_Test* self)
 
 void c_test_string_trim(CUnit_Test* self)
 {
+    CError err;
     char* buf = " my name is C\n";
     cstr str = c_string_new_from_buf(buf, strlen(buf));
 
-    c_string_rtrim_whitespaces(str);
+    c_string_rtrim_whitespaces(str, &err);
+    TEST_REQUIRE_MESSAGE(err.code == C_NO_ERROR, err.msg);
     TEST_CHECK(c_string_equal(str, " my name is C"));
 
-    c_string_ltrim_whitespaces(str);
+    c_string_ltrim_whitespaces(str, &err);
+    TEST_REQUIRE_MESSAGE(err.code == C_NO_ERROR, err.msg);
     TEST_CHECK(c_string_equal(str, "my name is C"));
 
     c_string_free(str);

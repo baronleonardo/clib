@@ -3,6 +3,7 @@
 
 #include "typedef.h"
 #include "char.h"
+#include "error.h"
 
 /// @brief: A utf-8 null-terminated string library
 
@@ -33,28 +34,28 @@ c_string_capacity(cstr self);
 /// @brief use this function to update `self` with the new length
 ///        if you manipulated the string externally (like using `string.h` functions)
 void
-c_string_update_len(cstr self);
+c_string_update_len(cstr self, CError* err);
 
 bool
 c_string_equal(cstr str1, cstr str2);
 
 void
-c_string_trim(cstr self, const char* chars, u32 chars_len);
+c_string_trim(cstr self, const char* chars, u32 chars_len, CError* err);
 
 void
-c_string_trim_whitespaces(cstr self);
+c_string_trim_whitespaces(cstr self, CError* err);
 
 void
-c_string_ltrim(cstr self, const char* chars, u32 chars_len);
+c_string_ltrim(cstr self, const char* chars, u32 chars_len, CError* err);
 
 void
-c_string_ltrim_whitespaces(cstr self);
+c_string_ltrim_whitespaces(cstr self, CError* err);
 
 void
-c_string_rtrim(cstr self, const char* chars, u32 chars_len);
+c_string_rtrim(cstr self, const char* chars, u32 chars_len, CError* err);
 
 void
-c_string_rtrim_whitespaces(cstr self);
+c_string_rtrim_whitespaces(cstr self, CError* err);
 
 i64
 c_string_find(cstr self, char* token);

@@ -3,6 +3,7 @@
 #include <clib/assert.h>
 #include <clib/config.h>
 #include <clib/error.h>
+#include <clib/panic.h>
 
 #include <stdlib.h>
 
@@ -70,7 +71,7 @@ c_string_capacity(cstr self)
 }
 
 void
-c_string_update_len(cstr self)
+c_string_update_len(cstr self, CError* err)
 {
     CString* cstring_header = (CString*)self - 1;
     u32 new_len = strlen(self);
@@ -78,10 +79,11 @@ c_string_update_len(cstr self)
     if(cstring_header->size - sizeof(CString) - 1 > new_len)
     {
         cstring_header->str_len = new_len;
+        c_error_set_no_error(err);
     }
     else
     {
-        c_error_set('s', "Error: `new_len` is less the size of the string");
+        c_error_set(err, 's', "Error: `new_len` is less the size of the string");
     }
 }
 
@@ -98,22 +100,22 @@ c_string_equal(cstr str1, cstr str2)
 }
 
 void
-c_string_trim(cstr self, const char* chars, u32 chars_len)
+c_string_trim(cstr self, const char* chars, u32 chars_len, CError* err)
 {
-    c_string_rtrim(self, chars, chars_len);
-    c_string_ltrim(self, chars, chars_len);
+    c_string_rtrim(self, chars, chars_len, err);
+    c_string_ltrim(self, chars, chars_len, err);
 }
 
 void
-c_string_trim_whitespaces(cstr self)
+c_string_trim_whitespaces(cstr self, CError* err)
 {
     u32 cstr_whitespaces_len = strlen(cstr_whitespaces);
-    c_string_rtrim(self, cstr_whitespaces, cstr_whitespaces_len);
-    c_string_ltrim(self, cstr_whitespaces, cstr_whitespaces_len);
+    c_string_rtrim(self, cstr_whitespaces, cstr_whitespaces_len, err);
+    c_string_ltrim(self, cstr_whitespaces, cstr_whitespaces_len, err);
 }
 
 void
-c_string_ltrim(cstr self, const char* chars, u32 chars_len)
+c_string_ltrim(cstr self, const char* chars, u32 chars_len, CError* err)
 {
     bool found = false;
     i64 last_trim_index = -1;
@@ -140,19 +142,20 @@ c_string_ltrim(cstr self, const char* chars, u32 chars_len)
     if(last_trim_index > 0)
     {
         memmove(self, &self[last_trim_index], str_len - last_trim_index + 1);
-        c_string_update_len(self);
+        c_string_update_len(self, err);
+
     }
 }
 
 void
-c_string_ltrim_whitespaces(cstr self)
+c_string_ltrim_whitespaces(cstr self, CError* err)
 {
     u32 cstr_whitespaces_len = strlen(cstr_whitespaces);
-    c_string_ltrim(self, cstr_whitespaces, cstr_whitespaces_len);
+    c_string_ltrim(self, cstr_whitespaces, cstr_whitespaces_len, err);
 }
 
 void
-c_string_rtrim(cstr self, const char* chars, u32 chars_len)
+c_string_rtrim(cstr self, const char* chars, u32 chars_len, CError* err)
 {
     bool found = false;
     bool is_trimmed = false;
@@ -177,29 +180,27 @@ c_string_rtrim(cstr self, const char* chars, u32 chars_len)
 
     if(is_trimmed)
     {
-        c_string_update_len(self);
+        c_string_update_len(self, err);
     }
 }
 
 void
-c_string_rtrim_whitespaces(cstr self)
+c_string_rtrim_whitespaces(cstr self, CError* err)
 {
     u32 cstr_whitespaces_len = strlen(cstr_whitespaces);
-    c_string_rtrim(self, cstr_whitespaces, cstr_whitespaces_len);
+    c_string_rtrim(self, cstr_whitespaces, cstr_whitespaces_len, err);
 }
 
 i64
 c_string_find(cstr self, char* token)
 {
-    c_log(fatal)("not implementd!", "");
-    abort();
+    panic("not implemented!");
 }
 
 i64
 c_string_find_char(cstr self, CChar* ch)
 {
-    c_log(fatal)("not implementd!", "");
-    abort();
+    panic("not implemented!");
 }
 
 cstr

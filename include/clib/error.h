@@ -1,22 +1,19 @@
 #ifndef CLIB_ERROR_H
 #define CLIB_ERROR_H
 
-#include "string.h"
+#include "typedef.h"
 
-/// @TODO: memory safty (multithreading)
+#define C_NO_ERROR  0
 
 typedef struct CError {
-    union {
-        bool valid;
-        cstr msg;
-    };
     i32 code;
+    const char* msg;
 } CError;
 
-CError
-c_error_get();
+void
+c_error_set(CError* self, i32 code, const char* msg);
 
 void
-c_error_set(i32 code, const char* msg);
+c_error_set_no_error(CError* self);
 
 #endif // CLIB_ERROR_H

@@ -1,6 +1,9 @@
 #include <clib/file.h>
 #include <clib/assert.h>
 #include <clib/error.h>
+#include <clib/log.h>
+#include <clib/config.h>
+#include <clib/panic.h>
 
 #include <string.h>
 #include <errno.h>
@@ -10,35 +13,43 @@ static bool is_cpu_little_endian();
 #define swap(elem1, elem2) (elem1 = elem1 ^ elem2, elem2 = elem2 ^ elem1, elem1 = elem1 ^ elem2)
 
 CFile
-c_file_open(cstr path, cstr mode)
+c_file_open(cstr path, cstr mode, CError* err)
 {
     // c_assert_debug(c_string_len(path) == strlen(path), "");
     CFile file = {};
     file.stream = fopen(path, mode);
     if(!file.stream)
     {
-        c_error_set(errno, "Error: Can't open the input path");
+        c_error_set(err, errno, "Error: Can't open the input path");
+    }
+    else
+    {
+        c_error_set_no_error(err);
     }
 
     return file;
 }
 
 uchar
-c_file_readchar(CFile* self)
+c_file_readchar(CFile* self, CError* err)
 {
     c_assert_debug(self, "");
     i32 read_status = fgetc(self->stream);
 
     if(read_status == EOF)
     {
-        c_error_set(ferror(self->stream), "Couldn't read from file");
+        c_error_set(err, ferror(self->stream), "Couldn't read from file");
+    }
+    else
+    {
+        c_error_set_no_error(err);
     }
 
     return read_status;
 }
 
 u32
-c_file_readline(CFile* self, cstr buf)
+c_file_readline(CFile* self, cstr buf, CError* err)
 {
     c_assert_debug(self, "");
     c_assert_debug(buf, "");
@@ -46,7 +57,7 @@ c_file_readline(CFile* self, cstr buf)
     char* read_status = fgets(buf, c_string_capacity(buf), self->stream);
     if(read_status)
     {
-        c_string_update_len(buf);
+        c_string_update_len(buf, err);
         return c_string_len(buf);
     }
     else
@@ -55,8 +66,8 @@ c_file_readline(CFile* self, cstr buf)
     }
 }
 
-bool
-c_file_writechar(CFile* self, uchar ch)
+void
+c_file_writechar(CFile* self, uchar ch, CError* err)
 {
     c_assert_debug(self, "");
 
@@ -64,40 +75,56 @@ c_file_writechar(CFile* self, uchar ch)
 
     if(write_status == EOF)
     {
-        c_error_set(ferror(self->stream), "Couldn't write to file");
-        return false;
+        c_error_set(err, ferror(self->stream), "Couldn't write to file");
     }
-
-    return true;
+    else
+    {
+        c_error_set_no_error(err);
+    }
 }
 
-bool
-c_file_writeline(CFile* self, cstr line)
+void
+c_file_writeline(CFile* self, cstr line, CError* err)
 {
     c_assert_debug(self, "");
     c_assert_debug(line, "");
 
-    fwrite(line, 1, c_string_len(line), self->stream);
-}
-
-bool
-c_file_seek(CFile* self, u32 pos)
-{
-
+    u32 chars_written = fwrite(line, 1, c_string_len(line), self->stream);
+    if(chars_written == EOF)
+    {
+        c_error_set(err, ferror(self->stream), "Couldn't write to file");
+    }
+    else
+    {
+        c_error_set_no_error(err);
+    }
 }
 
 void
-c_file_close(CFile* self)
+c_file_seek(CFile* self, u32 pos, CError* err)
+{
+    panic("not implemented!");
+}
+
+void
+c_file_close(CFile* self, CError* err)
 {
     c_assert_debug(self, "");
     c_assert_debug(self->stream, "");
-    c_assert_debug(fclose(self->stream) == 0, "");
+    if(fclose(self->stream) != 0)
+    {
+        return c_error_set(err, ferror(self->stream), "Couldn't close the file");
+    }
+    else
+    {
+        return c_error_set_no_error(err);
+    }
 }
 
 ////////////////////////////////////////////////////////////
 
 u32
-c_file_read_impl(CFile* self, void* buf, u32 element_size, u32 elements_num, bool append_zero)
+c_file_read_impl(CFile* self, void* buf, u32 element_size, u32 elements_num, bool append_zero, CError* err)
 {
     c_assert_debug(self, "");
     c_assert_debug(buf, "");
@@ -124,8 +151,8 @@ c_file_read_impl(CFile* self, void* buf, u32 element_size, u32 elements_num, boo
     return chars_read;
 }
 
-bool
-c_file_write_impl(CFile* self, void* buf, u32 element_size, u32 elements_num)
+void
+c_file_write_impl(CFile* self, void* buf, u32 element_size, u32 elements_num, CError* err)
 {
     c_assert_debug(self, "");
     c_assert_debug(buf, "");
@@ -146,10 +173,12 @@ c_file_write_impl(CFile* self, void* buf, u32 element_size, u32 elements_num)
 
     if(written_chars == EOF)
     {
-        c_error_set(ferror(self->stream), "Couldn't write to file");
+        c_error_set(err, ferror(self->stream), "Couldn't write to file");
     }
-
-    return written_chars;
+    else
+    {
+        c_error_set_no_error(err);
+    }
 }
 
 bool
