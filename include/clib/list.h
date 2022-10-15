@@ -13,6 +13,8 @@ typedef struct CList {
     u32 element_size;
 } CList;
 
+#define c_list(T) T*
+
 #define c_list_new(T) c_list_new_impl(sizeof(T), 0)
 
 #define c_list_new_with_capacity(T, capacity) c_list_new_impl(sizeof(T), capacity)
@@ -23,7 +25,7 @@ typedef struct CList {
 
 #define c_list_pop(self) (c_list_pop_validation_impl(self), self[(((CList *)self) - 1)->len-- - 1])
 
-#define c_list_capacity(self) (((CList *)self) - 1)->capacitiy
+#define c_list_capacity(self) (((CList *)self) - 1)->capacity
 
 #define c_list_set_capacity(self, new_capacity) c_list_set_capacity_impl((void**)&self, new_capacity)
 
