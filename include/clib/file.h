@@ -31,13 +31,33 @@ typedef struct CFile {
 CFile
 c_file_open(cstr path, cstr mode);
 
+#define c_file_read(self, buf, buf_size, append_zero) c_file_read_impl(self, buf, sizeof(buf[0]), buf_size, append_zero)
+
 uchar
-c_file_read(CFile* self);
+c_file_readchar(CFile* self);
 
 u32
 c_file_readline(CFile* self, cstr buf);
 
+/// @note: if this cpu is little endian, the `buf` will be updated
+///        take a copy of it first if you want to keep it
+#define c_file_write(self, buf, buf_len) c_file_write_impl(self, buf, sizeof(buf[0]), buf_len)
+
+void
+c_file_writechar(CFile* self, uchar ch);
+
+void
+c_file_writeline(CFile* self, cstr line);
+
 void
 c_file_close(CFile* self);
+
+
+/// Private functions (DON'T CALL THEM)
+u32
+c_file_read_impl(CFile* self, void* buf, u32 element_size, u32 elements_num, bool append_zero);
+
+u32
+c_file_write_impl(CFile* self, void* buf, u32 element_size, u32 elements_num);
 
 #endif
