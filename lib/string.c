@@ -6,11 +6,6 @@
 
 #include <stdlib.h>
 
-typedef struct CString {
-    u32 size; // including header and zero terminated
-    u32 str_len;
-} CString;
-
 /// Private
 static u32 __c_string_get_len__(const char* buf, u32 size);
 
@@ -86,8 +81,7 @@ c_string_update_len(cstr self)
     }
     else
     {
-        const char* msg = "Error: `new_len` is less the size of the string";
-        c_error_set('s', msg, strlen(msg));
+        c_error_set('s', "Error: `new_len` is less the size of the string");
     }
 }
 

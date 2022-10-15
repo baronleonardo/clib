@@ -6,15 +6,10 @@
 
 /// @brief: A utf-8 null-terminated string library
 
-// typedef struct CString {
-//     union{
-//         uchar* buf;
-//         bool valid;
-//     };
-//     u32 size;   // size in bytes
-//     u32 capacity;
-//     bool on_heap;
-// } CString;
+typedef struct CString {
+    u32 size; // including header and zero terminated
+    u32 str_len;
+} CString;
 
 typedef char* cstr;
 
