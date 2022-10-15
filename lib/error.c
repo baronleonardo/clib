@@ -1,25 +1,28 @@
 #include <clib/error.h>
 #include <clib/config.h>
 #include <clib/log.h>
+#include <clib/assert.h>
 
 #include <string.h>
 
-static char __cerror_msg__[ERROR_MSG_LEN];
-static u32 __cerror_msg_size__ = 0;
-static i32 __cerror_code__ = 0;
-static bool __cerror_is_old_error__ = false;
+static struct {
+    bool is_old;
+    i32 code;
+    CString str;
+    char msg[ERROR_MSG_LEN];    // this must be after CString struct
+} __cerror__ = { .str.size = ERROR_MSG_LEN, .str.str_len = 0, .code = 0, .is_old = false };
 
 CError
 c_error_get()
 {
-    if(!__cerror_is_old_error__)
+    if(!__cerror__.is_old)
     {
         CError err = {
-            .code = __cerror_code__,
-            .msg = c_string_new_from_buf(__cerror_msg__, __cerror_msg_size__)
+            .code = __cerror__.code,
+            .msg = __cerror__.msg,
         };
 
-        __cerror_is_old_error__ = true;
+        __cerror__.is_old = true;
 
         return err;
     }
@@ -30,17 +33,19 @@ c_error_get()
 }
 
 void
-c_error_set(i32 code, const char* msg, u32 msg_size)
+c_error_set(i32 code, const char* msg)
 {
-    void* copy_status = memcpy(__cerror_msg__, msg, msg_size);
+    u32 msg_size = strlen(msg);
+    void* copy_status = memcpy(__cerror__.msg, msg, msg_size);
     if(copy_status)
     {
-        __cerror_is_old_error__ = false;
-        __cerror_msg_size__ = msg_size;
-        __cerror_code__ = code;
+        __cerror__.is_old = false;
+        __cerror__.str.str_len = msg_size;
+        __cerror__.code = code;
     }
     else
     {
         c_log(fatal)("Failed to set error due to memcpy error", "");
+        abort();
     }
 }

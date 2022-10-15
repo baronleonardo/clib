@@ -17,6 +17,6 @@ CError
 c_error_get();
 
 void
-c_error_set(i32 code, const char* msg, u32 msg_size);
+c_error_set(i32 code, const char* msg);
 
 #endif // CLIB_ERROR_H
