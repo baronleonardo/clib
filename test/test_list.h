@@ -40,7 +40,7 @@ void c_test_list_new_from_array(CUnit_Test* self)
 
     for(int iii = 0; iii < c_list_len(list); iii++)
     {
-        TEST_CHECK(abs(list[iii] - arr[iii]) < epsilon);
+        TEST_CHECK(fabs(list[iii] - arr[iii]) < epsilon);
     }
 
     c_list_free(list);
