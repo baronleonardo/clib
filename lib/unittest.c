@@ -15,14 +15,14 @@
 #endif // o_printf
 
 #ifdef _WIN32
-#define c_unittest_aligned_alloc _aligned_malloc
+#define c_unittest_aligned_alloc(alignment, size) _aligned_malloc(size, alignment)
 #define c_unittest_aligned_free _aligned_free
-#define c_unittest_aligneof(alignment, size) _Alignof(size, alignment)
+#define c_unittest_aligneof _Alignof
 #else
 #include <stdalign.h>
-#define c_unittest_aligned_alloc aligned_alloc
+#define c_unittest_aligned_alloc(alignment, size) aligned_alloc(alignment, size)
 #define c_unittest_aligned_free  free
-#define c_unittest_aligneof(alignment, size) alignof(alignment, size)
+#define c_unittest_aligneof alignof
 #endif
 
 #ifndef USE_NO_COLOR
