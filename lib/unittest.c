@@ -14,11 +14,11 @@
 #define o_printf printf
 #endif // o_printf
 
-#ifndef _WIN32
-#define c_unittest_aligned_alloc aligned_alloc
+#ifdef _WIN32
+#define c_unittest_aligned_alloc _aligned_malloc
 #else
 #include <stdalign.h>
-#define c_unittest_aligned_alloc _aligned_malloc
+#define c_unittest_aligned_alloc aligned_alloc
 #endif
 
 #ifndef USE_NO_COLOR
