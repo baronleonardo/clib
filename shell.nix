@@ -5,7 +5,7 @@ pkgs.mkShell {
     gdb
     ninja
     valgrind
-    pkgsCross.mingwW64.buildPackages.gcc
+    clang
   ];
 
   shellHook = ''
