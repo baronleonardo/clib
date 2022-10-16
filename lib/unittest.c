@@ -16,9 +16,11 @@
 
 #ifdef _WIN32
 #define c_unittest_aligned_alloc _aligned_malloc
+#define c_unittest_aligned_free _aligned_free
 #else
 #include <stdalign.h>
 #define c_unittest_aligned_alloc aligned_alloc
+#define c_unittest_aligned_free  free
 #endif
 
 #ifndef USE_NO_COLOR
@@ -49,7 +51,7 @@ c_test_init(size_t max_test_cases, int argc, const char** argv)
 {
     CUnit_Test unit_test = {
         .max_test_cases_num = max_test_cases,
-        .test_cases = c_unittest_aligned_alloc(alignof(Test_Case), sizeof(Test_Case) * max_test_cases),
+        .test_cases = c_unittest_aligned_alloc(_Alignof(Test_Case), sizeof(Test_Case) * max_test_cases),
     };
 
     unit_test.cases_positive = unit_test.cases_negative = unit_test.checks_negative = unit_test.checks_positive = 0;
@@ -94,7 +96,7 @@ __c_test_on_singal__(int signal_num)
 void
 __c_test_deinit__(CUnit_Test* self)
 {
-    free(self->test_cases);
+    c_unittest_aligned_free(self->test_cases);
     self->test_cases = NULL;
 }
 
