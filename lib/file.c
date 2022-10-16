@@ -17,9 +17,15 @@ c_file_open(cstr path, cstr mode, CError* err)
 {
     // c_assert_debug(c_string_len(path) == strlen(path), "");
     CFile file;
+#ifdef _WIN32
+    errno_t open_err = fopen_s(&file.stream, path, mode);
+    if(open_err != 0)
+    {
+#else
     file.stream = fopen(path, mode);
     if(!file.stream)
     {
+#endif
         c_error_set(err, errno, "Error: Can't open the input path");
     }
     else
@@ -131,7 +137,7 @@ c_file_read_impl(CFile* self, void* buf, u32 element_size, u32 elements_num, boo
 
     u32 chars_read = fread(buf, element_size, elements_num, self->stream);
 
-    if(is_cpu_little_endian && element_size != 1)
+    if(is_cpu_little_endian() && element_size != 1)
     {
         for(u32 iii = 0; iii < chars_read; iii++)
         {
@@ -157,7 +163,7 @@ c_file_write_impl(CFile* self, void* buf, u32 element_size, u32 elements_num, CE
     c_assert_debug(self, "");
     c_assert_debug(buf, "");
 
-    if(is_cpu_little_endian && element_size != 1)
+    if(is_cpu_little_endian() && element_size != 1)
     {
         for(u32 iii = 0; iii < elements_num; iii++)
         {
