@@ -37,7 +37,7 @@ c_test_init(size_t max_test_cases, int argc, const char** argv);
     void handler(CUnit_Test* test); \
     _Generic((unit_test), \
     CUnit_Test*: _Generic((handler), c_test_case_handler: c_test_register_impl))(unit_test, handler, #handler)
-#endif // _WIn32
+#endif // _Win32
 
 void
 c_test_run(CUnit_Test* self);
