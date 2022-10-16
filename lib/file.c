@@ -16,7 +16,7 @@ CFile
 c_file_open(cstr path, cstr mode, CError* err)
 {
     // c_assert_debug(c_string_len(path) == strlen(path), "");
-    CFile file = {};
+    CFile file;
     file.stream = fopen(path, mode);
     if(!file.stream)
     {
@@ -113,11 +113,11 @@ c_file_close(CFile* self, CError* err)
     c_assert_debug(self->stream, "");
     if(fclose(self->stream) != 0)
     {
-        return c_error_set(err, ferror(self->stream), "Couldn't close the file");
+        c_error_set(err, ferror(self->stream), "Couldn't close the file");
     }
     else
     {
-        return c_error_set_no_error(err);
+        c_error_set_no_error(err);
     }
 }
 
@@ -135,7 +135,7 @@ c_file_read_impl(CFile* self, void* buf, u32 element_size, u32 elements_num, boo
     {
         for(u32 iii = 0; iii < chars_read; iii++)
         {
-            char* cur_element = buf + iii * element_size;
+            char* cur_element = (char*)buf + iii * element_size;
             for(u32 start = 0, end = element_size - 1; start < end; ++start, --end)
             {
                 swap(cur_element[start], cur_element[end]);
@@ -145,7 +145,7 @@ c_file_read_impl(CFile* self, void* buf, u32 element_size, u32 elements_num, boo
 
     if(append_zero)
     {
-        *(char*)(buf + element_size * chars_read) = '\0';
+        *(char*)((char*)buf + element_size * chars_read) = '\0';
     }
 
     return chars_read;
@@ -161,7 +161,7 @@ c_file_write_impl(CFile* self, void* buf, u32 element_size, u32 elements_num, CE
     {
         for(u32 iii = 0; iii < elements_num; iii++)
         {
-            char* cur_element = buf + iii * element_size;
+            char* cur_element = (char*)buf + iii * element_size;
             for(u32 start = 0, end = element_size - 1; start < end; ++start, --end)
             {
                 swap(cur_element[start], cur_element[end]);

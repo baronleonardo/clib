@@ -1,6 +1,5 @@
 #include <clib/unittest.h>
 
-#include <stdalign.h>
 #include <signal.h>
 #include <stdatomic.h>
 #include <errno.h>
@@ -15,6 +14,13 @@
 #include <stdio.h>
 #define o_printf printf
 #endif // o_printf
+
+#ifndef WIN32
+#define c_unittest_aligned_alloc aligned_alloc
+#else
+#include <stdalign.h>
+#define c_unittest_aligned_alloc _aligned_malloc
+#endif
 
 #ifndef USE_NO_COLOR
 #define __TEST_COLOR_CHECK_FAILED__     "\x1b[33m"
@@ -44,7 +50,7 @@ c_test_init(size_t max_test_cases, int argc, const char** argv)
 {
     CUnit_Test unit_test = {
         .max_test_cases_num = max_test_cases,
-        .test_cases = aligned_alloc(alignof(Test_Case), sizeof(Test_Case) * max_test_cases)
+        .test_cases = c_unittest_aligned_alloc(alignof(Test_Case), sizeof(Test_Case) * max_test_cases),
     };
 
     unit_test.cases_positive = unit_test.cases_negative = unit_test.checks_negative = unit_test.checks_positive = 0;
