@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.16)
 
 project(clib C)
-set(CMAKE_C_STANDARD_REQUIRED c11)
+set(CMAKE_C_STANDARD_REQUIRED c17)
 
 option(example "build examples" OFF)
 option(test "build tests" OFF)
