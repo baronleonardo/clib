@@ -17,12 +17,12 @@
 #ifdef _WIN32
 #define c_unittest_aligned_alloc _aligned_malloc
 #define c_unittest_aligned_free _aligned_free
-#define c_unittest_aligneof _Alignof
+#define c_unittest_aligneof(alignment, size) _Alignof(size, alignment)
 #else
 #include <stdalign.h>
 #define c_unittest_aligned_alloc aligned_alloc
 #define c_unittest_aligned_free  free
-#define c_unittest_aligneof alignof
+#define c_unittest_aligneof(alignment, size) alignof(alignment, size)
 #endif
 
 #ifndef USE_NO_COLOR
