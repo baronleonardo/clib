@@ -1,7 +1,6 @@
 #include <clib/unittest.h>
 
 #include <signal.h>
-#include <stdatomic.h>
 #include <errno.h>
 #include <string.h>
 
