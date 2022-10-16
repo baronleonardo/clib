@@ -14,7 +14,7 @@
 #define o_printf printf
 #endif // o_printf
 
-#ifndef WIN32
+#ifndef _WIN32
 #define c_unittest_aligned_alloc aligned_alloc
 #else
 #include <stdalign.h>
