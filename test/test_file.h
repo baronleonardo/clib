@@ -6,14 +6,16 @@
 #include <clib/log.h>
 #include <clib/list.h>
 
+#include <string.h>
+
 static inline void c_test_file(CUnit_Test* unit_test)
 {
-    c_test_register(unit_test, c_test_list_readline);
-    c_test_register(unit_test, c_test_list_read);
-    c_test_register(unit_test, c_test_list_write);
+    c_test_register(unit_test, c_test_file_readline);
+    c_test_register(unit_test, c_test_file_read);
+    c_test_register(unit_test, c_test_file_write);
 }
 
-void c_test_list_readline(CUnit_Test* self)
+void c_test_file_readline(CUnit_Test* self)
 {
     char* gt[] = {
         "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
@@ -43,7 +45,7 @@ void c_test_list_readline(CUnit_Test* self)
     TEST_REQUIRE_MESSAGE(err.code == C_NO_ERROR, err.msg);
 }
 
-void c_test_list_read(CUnit_Test* self)
+void c_test_file_read(CUnit_Test* self)
 {
     CError err;
 
@@ -92,7 +94,7 @@ void c_test_list_read(CUnit_Test* self)
     TEST_REQUIRE_MESSAGE(err.code == C_NO_ERROR, err.msg);
 }
 
-void c_test_list_write(CUnit_Test* self)
+void c_test_file_write(CUnit_Test* self)
 {
     CError err;
 
@@ -106,6 +108,18 @@ void c_test_list_write(CUnit_Test* self)
     TEST_REQUIRE_MESSAGE(err.code == C_NO_ERROR, err.msg);
 
     c_file_close(&file2, &err);
+    TEST_REQUIRE_MESSAGE(err.code == C_NO_ERROR, err.msg);
+
+    // test arabic
+    CFile file_arabic = c_file_open(test_path "/output/file_arabic", "w", &err);
+    TEST_REQUIRE_MESSAGE(err.code == C_NO_ERROR, err.msg);
+
+    const char* buf = "اللّه نور السماوات و الأرض";
+    cstr str = c_string_new_from_buf(buf, strlen(buf));
+    c_file_write(&file_arabic, str, c_string_capacity(str), &err);
+    TEST_REQUIRE_MESSAGE(err.code == C_NO_ERROR, err.msg);
+
+    c_file_close(&file_arabic, &err);
     TEST_REQUIRE_MESSAGE(err.code == C_NO_ERROR, err.msg);
 }
 

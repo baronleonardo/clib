@@ -14,7 +14,7 @@ static inline void c_test_string(CUnit_Test* unit_test)
 void c_test_string_new(CUnit_Test* self)
 {
     // char* str_buf = "My name is CLib";
-    char* str_buf = "ماي نيم ايز خان";
+    char* str_buf = "اللّه نور السماوات و الأرض";
     u32 str_buf_size = strlen(str_buf);
     cstr str = c_string_new_from_buf(str_buf, str_buf_size);
 
