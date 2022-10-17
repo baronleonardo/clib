@@ -1,11 +1,12 @@
 { pkgs ? import <nixpkgs> {} }:
 pkgs.mkShell {
+  hardeningDisable = [ "all" ];
   buildInputs = with pkgs; [
     cmake
     gdb
     ninja
     valgrind
-    clang
+    zig
   ];
 
   shellHook = ''
