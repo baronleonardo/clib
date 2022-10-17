@@ -7,6 +7,7 @@ pkgs.mkShell {
     ninja
     valgrind
     zig
+    wine64Packages.minimal
   ];
 
   shellHook = ''
