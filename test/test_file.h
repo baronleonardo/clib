@@ -92,6 +92,25 @@ void c_test_file_read(CUnit_Test* self)
     c_list_free(list);
     c_file_close(&file2, &err);
     TEST_REQUIRE_MESSAGE(err.code == C_NO_ERROR, err.msg);
+
+    /*************************************************************/
+
+    // test arabic
+    CFile file_arabic = c_file_open(test_path "/output/file_arabic", "r", &err);
+    TEST_REQUIRE_MESSAGE(err.code == C_NO_ERROR, err.msg);
+
+    const char* gt_str = "اللّه نور السماوات و الأرض";
+    cstr gt = c_string_new_from_buf(gt_str, strlen(gt_str));
+
+    cstr str = c_string_new(100);
+
+    c_file_read(&file_arabic, str, c_string_capacity(str), true, &err);
+    TEST_REQUIRE_MESSAGE(err.code == C_NO_ERROR, err.msg);
+
+    TEST_CHECK(c_string_equal(str, gt));
+
+    c_file_close(&file_arabic, &err);
+    TEST_REQUIRE_MESSAGE(err.code == C_NO_ERROR, err.msg);
 }
 
 void c_test_file_write(CUnit_Test* self)
@@ -109,6 +128,8 @@ void c_test_file_write(CUnit_Test* self)
 
     c_file_close(&file2, &err);
     TEST_REQUIRE_MESSAGE(err.code == C_NO_ERROR, err.msg);
+
+    /*************************************************************/
 
     // test arabic
     CFile file_arabic = c_file_open(test_path "/output/file_arabic", "w", &err);
