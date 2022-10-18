@@ -252,6 +252,14 @@ c_test_check_impl(
                 file, line, expr_str);
 
             self->checks_negative++;
+
+            o_fprintf(stderr,
+                __TEST_COLOR_FAILED__
+                "FATAL ERROR: Test case `%s` failed.\n"
+                __TEST_COLOR_RESET__,
+                self->test_cases[self->current_test_case_index].name
+            );
+
             return false;
         }
         else
