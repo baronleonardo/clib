@@ -24,7 +24,9 @@ void c_test_file_readline(CUnit_Test* self)
         "Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
     };
     CError err;
-    CFile file1 = c_file_open(test_path "/input/file1", "r", &err);
+    char* path_c = test_path "/input/file1";
+    cstr path = c_string_new_from_buf(path_c, strlen(path_c));
+    CFile file1 = c_file_open(path, "r", &err);
     TEST_REQUIRE_MESSAGE(err.code == C_NO_ERROR, err.msg);
 
     cstr buf = c_string_new(150);

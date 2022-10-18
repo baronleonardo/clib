@@ -30,7 +30,7 @@ typedef struct CFile {
  */
 
 CFile
-c_file_open(cstr path, cstr mode, CError* err);
+c_file_open(cstr path, const char* mode, CError* err);
 
 #define c_file_read(self, buf, buf_size, append_zero, err) c_file_read_impl(self, buf, sizeof(buf[0]), buf_size, append_zero, err)
 

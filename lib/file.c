@@ -4,21 +4,39 @@
 #include <clib/log.h>
 #include <clib/config.h>
 #include <clib/panic.h>
+#include <clib/list.h>
 
 #include <string.h>
 #include <errno.h>
+#ifdef _WIN32
+#include <windows.h>
+#endif // _WIN32
+
+typedef wchar_t* cwstr;
 
 static bool is_cpu_little_endian();
+#ifdef _WIN32
+static cwstr cstr_to_cwstr(const cstr str, CError* err);
+static u32 str_to_wstr(const char* str, wchar_t** res, u32 res_size);
+#endif // _WIN32
 
 #define swap(elem1, elem2) (elem1 = elem1 ^ elem2, elem2 = elem2 ^ elem1, elem1 = elem1 ^ elem2)
 
 CFile
-c_file_open(cstr path, cstr mode, CError* err)
+c_file_open(cstr path, const char* mode, CError* err)
 {
     // c_assert_debug(c_string_len(path) == strlen(path), "");
     CFile file;
 #ifdef _WIN32
-    errno_t open_err = fopen_s(&file.stream, path, mode);
+    // convert mode to unicode
+    enum { wide_mode_size = 10 };
+    wchar_t wide_mode[wide_mode_size];
+    u32 wide_mode_len = str_to_wstr(mode, (wchar_t**)&wide_mode, wide_mode_size);
+    // convert path to unicode
+    cwstr wide_path = cstr_to_cwstr(path, err);
+
+    errno_t open_err = _wfopen_s(&file.stream, wide_path, wide_mode);
+    c_string_free((cstr)wide_path);
     if(open_err != 0)
     {
 #else
@@ -193,3 +211,54 @@ is_cpu_little_endian()
     i32 num = 1;
     return *(char*)&num == 1;
 }
+
+#ifdef _WIN32
+cwstr
+cstr_to_cwstr(const cstr str, CError* err)
+{
+    i32 wstr_len = MultiByteToWideChar(CP_UTF8, 0, str, c_string_len(str), null, 0);
+    if(wstr_len <= 0)
+    {
+        if(err)
+        {
+            c_error_set(err, GetLastError(), "Couldn't convert cstr to cwstr");
+            return L"";
+        }
+        else
+        {
+            c_error_set_no_error(err);
+        }
+    }
+
+    cstr result_cwstr = c_string_new(wstr_len);
+    wstr_len = MultiByteToWideChar(CP_UTF8, MB_ERR_INVALID_CHARS, str, c_string_len(str), (cwstr)result_cwstr, wstr_len);
+    if(wstr_len <= 0)
+    {
+        if(err)
+        {
+            c_error_set(err, GetLastError(), "Couldn't convert cstr to cwstr");
+            return L"";
+        }
+        else
+        {
+            c_error_set_no_error(err);
+        }
+    }
+    c_string_update_len(result_cwstr, err);
+
+    return (cwstr)result_cwstr;
+}
+
+u32
+str_to_wstr(const char* str, wchar_t** res, u32 res_size)
+{
+    u32 str_len = strlen(str);
+    if(str_len >= res_size)
+    {
+        panic("Can not convert str to wstr as the buffer size is smaller than str len");
+    }
+    i32 wstr_len = MultiByteToWideChar(CP_UTF8, MB_ERR_INVALID_CHARS, str, str_len, *res, str_len);
+
+    return wstr_len;
+}
+#endif // _WIN32

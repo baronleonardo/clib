@@ -20,7 +20,7 @@ c_string_new(u32 size)
     cstr cstr_buf = (cstr)(cstring_header + 1);
     cstring_header->str_len = 0;
 
-    cstr_buf[0] = '\0';
+    cstr_buf[0] = '\0';  
 
     return cstr_buf;
 }
