@@ -12,12 +12,10 @@
 #include <windows.h>
 #endif // _WIN32
 
-typedef wchar_t* cwstr;
-
 static bool is_cpu_little_endian();
 #ifdef _WIN32
-static cwstr cstr_to_cwstr(const cstr str, CError* err);
-static u32 str_to_wstr(const char* str, wchar_t** res, u32 res_size);
+static wchar_t* cstr_to_cwstr(const cstr str, CError* err);
+static u32 str_to_wstr(const char* str, wchar_t* res, u32 res_size, CError* err);
 #endif // _WIN32
 
 #define swap(elem1, elem2) (elem1 = elem1 ^ elem2, elem2 = elem2 ^ elem1, elem1 = elem1 ^ elem2)
@@ -25,18 +23,17 @@ static u32 str_to_wstr(const char* str, wchar_t** res, u32 res_size);
 CFile
 c_file_open(cstr path, const char* mode, CError* err)
 {
-    // c_assert_debug(c_string_len(path) == strlen(path), "");
     CFile file;
 #ifdef _WIN32
     // convert mode to unicode
     enum { wide_mode_size = 10 };
     wchar_t wide_mode[wide_mode_size];
-    u32 wide_mode_len = str_to_wstr(mode, (wchar_t**)&wide_mode, wide_mode_size);
+    u32 wide_mode_len = str_to_wstr(mode, wide_mode, wide_mode_size, err);
     // convert path to unicode
-    cwstr wide_path = cstr_to_cwstr(path, err);
+    wchar_t* wide_path = cstr_to_cwstr(path, err);
 
     errno_t open_err = _wfopen_s(&file.stream, wide_path, wide_mode);
-    c_string_free((cstr)wide_path);
+    c_list_free(wide_path);
     if(open_err != 0)
     {
 #else
@@ -213,10 +210,10 @@ is_cpu_little_endian()
 }
 
 #ifdef _WIN32
-cwstr
+wchar_t*
 cstr_to_cwstr(const cstr str, CError* err)
 {
-    i32 wstr_len = MultiByteToWideChar(CP_UTF8, 0, str, c_string_len(str), null, 0);
+    i32 wstr_len = MultiByteToWideChar(CP_UTF8, 0, str, -1, null, 0);
     if(wstr_len <= 0)
     {
         if(err)
@@ -230,8 +227,9 @@ cstr_to_cwstr(const cstr str, CError* err)
         }
     }
 
-    cstr result_cwstr = c_string_new(wstr_len);
-    wstr_len = MultiByteToWideChar(CP_UTF8, MB_ERR_INVALID_CHARS, str, c_string_len(str), (cwstr)result_cwstr, wstr_len);
+    // cstr result_cwstr = c_string_new(wstr_len * sizeof(wchar_t));
+    c_list(wchar_t) result_cwstr = c_list_new_with_capacity(wchar_t, wstr_len);
+    wstr_len = MultiByteToWideChar(CP_UTF8, MB_ERR_INVALID_CHARS, str, -1, result_cwstr, wstr_len);
     if(wstr_len <= 0)
     {
         if(err)
@@ -244,20 +242,47 @@ cstr_to_cwstr(const cstr str, CError* err)
             c_error_set_no_error(err);
         }
     }
-    c_string_update_len(result_cwstr, err);
 
-    return (cwstr)result_cwstr;
+    return result_cwstr;
 }
 
 u32
-str_to_wstr(const char* str, wchar_t** res, u32 res_size)
+str_to_wstr(const char* str, wchar_t* res, u32 res_size, CError* err)
 {
     u32 str_len = strlen(str);
-    if(str_len >= res_size)
+
+    i32 wstr_len = MultiByteToWideChar(CP_UTF8, MB_ERR_INVALID_CHARS, str, -1, null, 0);
+    if(wstr_len <= 0)
+    {
+        if(err)
+        {
+            c_error_set(err, GetLastError(), "Couldn't convert cstr to cwstr");
+            return wstr_len;
+        }
+        else
+        {
+            c_error_set_no_error(err);
+        }
+    }
+
+    if(wstr_len >= res_size)
     {
         panic("Can not convert str to wstr as the buffer size is smaller than str len");
     }
-    i32 wstr_len = MultiByteToWideChar(CP_UTF8, MB_ERR_INVALID_CHARS, str, str_len, *res, str_len);
+
+    wstr_len = MultiByteToWideChar(CP_UTF8, MB_ERR_INVALID_CHARS, str, -1, res, wstr_len);
+    if(wstr_len <= 0)
+    {
+        if(err)
+        {
+            c_error_set(err, GetLastError(), "Couldn't convert cstr to cwstr");
+            return wstr_len;
+        }
+        else
+        {
+            c_error_set_no_error(err);
+        }
+    }
 
     return wstr_len;
 }
