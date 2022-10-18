@@ -1,4 +1,5 @@
 #include <clib/unittest.h>
+#include <clib/config.h>
 
 #include <signal.h>
 #include <errno.h>
@@ -25,7 +26,7 @@
 #define c_unittest_aligneof alignof
 #endif
 
-#ifndef USE_NO_COLOR
+#ifndef C_UNITTEST_NO_COLOR
 #define __TEST_COLOR_CHECK_FAILED__     "\x1b[33m"
 #define __TEST_COLOR_REQUIRE_FAILED__   "\x1b[31m"
 #define __TEST_COLOR_TITLES__           "\x1b[33m"
@@ -39,7 +40,7 @@
 #define __TEST_COLOR_PASSED__
 #define __TEST_COLOR_FAILED__
 #define __TEST_COLOR_RESET__
-#endif // USE_NO_COLOR
+#endif // C_UNITTEST_NO_COLOR
 
 // sig_atomic_t __signal_status__;
 static CUnit_Test* __unit_test__ = NULL;
