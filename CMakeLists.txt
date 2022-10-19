@@ -8,9 +8,10 @@ endif()
 
 option(example "build examples" OFF)
 option(test "build tests" OFF)
+option(zig "build using zig compiler" OFF)
 
 set(CMAKE_C_STANDARD_REQUIRED c17)
-if(NOT WIN32)
+if(NOT WIN32 AND zig)
     set(CMAKE_C_COMPILER ${CMAKE_SOURCE_DIR}/bin/zig-cc)
     message(${target})
     if(${target} STREQUAL "windows")
