@@ -13,6 +13,7 @@ static inline void c_test_file(CUnit_Test* unit_test)
     c_test_register(unit_test, c_test_file_readline);
     c_test_register(unit_test, c_test_file_read);
     c_test_register(unit_test, c_test_file_write);
+    c_test_register(unit_test, c_test_file_read_write_arabic_names);
 }
 
 void c_test_file_readline(CUnit_Test* self)
@@ -143,6 +144,39 @@ void c_test_file_write(CUnit_Test* self)
     TEST_REQUIRE_MESSAGE(err.code == C_NO_ERROR, err.msg);
 
     c_file_close(&file_arabic, &err);
+    TEST_REQUIRE_MESSAGE(err.code == C_NO_ERROR, err.msg);
+}
+
+void c_test_file_read_write_arabic_names(CUnit_Test* self)
+{
+    CError err;
+
+    // test read
+    CFile file_arabic = c_file_open(test_path "/input/فايل 3", "r", &err);
+    TEST_REQUIRE_MESSAGE(err.code == C_NO_ERROR, err.msg);
+
+    const char* buf = "اللّه نور السماوات و الأرض";
+    cstr gt = c_string_new_from_buf(buf, strlen(buf));
+
+    cstr str =  c_string_new(100);
+    c_file_read(&file_arabic, str, c_string_capacity(str), true, &err);
+    TEST_REQUIRE_MESSAGE(err.code == C_NO_ERROR, err.msg);
+
+    TEST_CHECK(c_string_equal(str, gt));
+
+    c_file_close(&file_arabic, &err);
+    TEST_REQUIRE_MESSAGE(err.code == C_NO_ERROR, err.msg);
+
+    /***********************************************************/
+
+    // test write
+    CFile file_arabic_out = c_file_open(test_path "/output/فايل_عربي", "w", &err);
+    TEST_REQUIRE_MESSAGE(err.code == C_NO_ERROR, err.msg);
+
+    c_file_write(&file_arabic_out, gt, c_string_len(gt), &err);
+    TEST_REQUIRE_MESSAGE(err.code == C_NO_ERROR, err.msg);
+
+    c_file_close(&file_arabic_out, &err);
     TEST_REQUIRE_MESSAGE(err.code == C_NO_ERROR, err.msg);
 }
 
