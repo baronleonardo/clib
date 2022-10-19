@@ -10,9 +10,9 @@
 
 static inline void c_test_file(CUnit_Test* unit_test)
 {
+    c_test_register(unit_test, c_test_file_write);
     c_test_register(unit_test, c_test_file_readline);
     c_test_register(unit_test, c_test_file_read);
-    c_test_register(unit_test, c_test_file_write);
     c_test_register(unit_test, c_test_file_read_write_arabic_names);
 }
 
@@ -45,6 +45,37 @@ void c_test_file_readline(CUnit_Test* self)
     }
 
     c_file_close(&file1, &err);
+    TEST_REQUIRE_MESSAGE(err.code == C_NO_ERROR, err.msg);
+}
+
+void c_test_file_write(CUnit_Test* self)
+{
+    CError err;
+
+    CFile file2 = c_file_open(test_path "/output/file2", "w", &err);
+    TEST_REQUIRE_MESSAGE(err.code == C_NO_ERROR, err.msg);
+
+    int arr[] = { 1, 2, 3, 4 };
+    u32 arr_len = sizeof(arr) / sizeof(arr[0]);
+
+    c_file_write(&file2, arr, arr_len, &err);
+    TEST_REQUIRE_MESSAGE(err.code == C_NO_ERROR, err.msg);
+
+    c_file_close(&file2, &err);
+    TEST_REQUIRE_MESSAGE(err.code == C_NO_ERROR, err.msg);
+
+    /*************************************************************/
+
+    // test arabic
+    CFile file_arabic = c_file_open(test_path "/output/file_arabic", "w", &err);
+    TEST_REQUIRE_MESSAGE(err.code == C_NO_ERROR, err.msg);
+
+    const char* buf = "اللّه نور السماوات و الأرض";
+    cstr str = c_string_new_from_buf(buf, strlen(buf));
+    c_file_write(&file_arabic, str, c_string_capacity(str), &err);
+    TEST_REQUIRE_MESSAGE(err.code == C_NO_ERROR, err.msg);
+
+    c_file_close(&file_arabic, &err);
     TEST_REQUIRE_MESSAGE(err.code == C_NO_ERROR, err.msg);
 }
 
@@ -111,37 +142,6 @@ void c_test_file_read(CUnit_Test* self)
     TEST_REQUIRE_MESSAGE(err.code == C_NO_ERROR, err.msg);
 
     TEST_CHECK(c_string_equal(str, gt));
-
-    c_file_close(&file_arabic, &err);
-    TEST_REQUIRE_MESSAGE(err.code == C_NO_ERROR, err.msg);
-}
-
-void c_test_file_write(CUnit_Test* self)
-{
-    CError err;
-
-    CFile file2 = c_file_open(test_path "/output/file2", "w", &err);
-    TEST_REQUIRE_MESSAGE(err.code == C_NO_ERROR, err.msg);
-
-    int arr[] = { 1, 2, 3, 4 };
-    u32 arr_len = sizeof(arr) / sizeof(arr[0]);
-
-    c_file_write(&file2, arr, arr_len, &err);
-    TEST_REQUIRE_MESSAGE(err.code == C_NO_ERROR, err.msg);
-
-    c_file_close(&file2, &err);
-    TEST_REQUIRE_MESSAGE(err.code == C_NO_ERROR, err.msg);
-
-    /*************************************************************/
-
-    // test arabic
-    CFile file_arabic = c_file_open(test_path "/output/file_arabic", "w", &err);
-    TEST_REQUIRE_MESSAGE(err.code == C_NO_ERROR, err.msg);
-
-    const char* buf = "اللّه نور السماوات و الأرض";
-    cstr str = c_string_new_from_buf(buf, strlen(buf));
-    c_file_write(&file_arabic, str, c_string_capacity(str), &err);
-    TEST_REQUIRE_MESSAGE(err.code == C_NO_ERROR, err.msg);
 
     c_file_close(&file_arabic, &err);
     TEST_REQUIRE_MESSAGE(err.code == C_NO_ERROR, err.msg);

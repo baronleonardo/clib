@@ -46,7 +46,7 @@
 static CUnit_Test* __unit_test__ = NULL;
 
 static void __c_test_on_fatal_error__(CUnit_Test* self, int signal_number);
-static void __c_test_post_run__(CUnit_Test* self);
+static int __c_test_post_run__(CUnit_Test* self);
 static void __c_test_on_singal__(int signal_num);
 
 CUnit_Test
@@ -144,17 +144,18 @@ void __c_test_on_fatal_error__(CUnit_Test* self, int sig_number)
 
     o_fprintf(stderr,
         __TEST_COLOR_FAILED__
-        "FATAL ERROR: signal %s: Test case `%s` failed.\n"
+        "ERROR: signal %s: Test case `%s` failed.\n"
         __TEST_COLOR_RESET__,
         sig_names[sig_number],
         self->test_cases[self->current_test_case_index].name
     );
 
-    __c_test_post_run__(self);
+    int status = __c_test_post_run__(self);
+    exit(status);
     // exit(EXIT_FAILURE);
 }
 
-void
+int
 __c_test_post_run__(CUnit_Test* self)
 {
     o_printf("\n"
@@ -177,7 +178,11 @@ __c_test_post_run__(CUnit_Test* self)
              self->checks_positive,
              self->checks_negative);
 
+    int negatives = self->cases_negative + self->checks_negative;
+
     __c_test_deinit__(self);
+
+    return negatives;
 }
 
 void
@@ -208,8 +213,8 @@ c_test_run(CUnit_Test* self)
         }
     }
 
-    __c_test_post_run__(self);
-    exit(EXIT_SUCCESS);
+    int status = __c_test_post_run__(self);
+    exit(status);
 }
 
 bool
