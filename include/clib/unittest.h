@@ -29,10 +29,16 @@ typedef enum { TEST_TYPE_CHECK, TEST_TYPE_REQUIRE } CTest_Check_Type;
 CUnit_Test
 c_test_init(size_t max_test_cases, int argc, const char** argv);
 
+#if defined(_MSC_VER) && !defined(__INTEL_COMPILER)
+#define c_test_register(unit_test, handler) \
+    void handler(CUnit_Test* test); \
+    c_test_register_impl(unit_test, handler, #handler)
+#else
 #define c_test_register(unit_test, handler) \
     void handler(CUnit_Test* test); \
     _Generic((unit_test), \
     CUnit_Test*: _Generic((handler), c_test_case_handler: c_test_register_impl))(unit_test, handler, #handler)
+#endif
 
 void
 c_test_run(CUnit_Test* self);
