@@ -1,7 +1,5 @@
 cmake_minimum_required(VERSION 3.16)
 
-project(clib C)
-
 if(NOT WIN32)
 set(target "linux" CACHE STRING "Choose one of 'linux'(default),'windows', 'macos'")
 endif()
@@ -26,6 +24,8 @@ if(NOT WIN32 AND zig)
     set(CMAKE_AR ${CMAKE_SOURCE_DIR}/bin/zig-ar)
     set(CMAKE_RANLIB ${CMAKE_SOURCE_DIR}/bin/zig-ranlib)
 endif()
+
+project(clib C)
 
 add_subdirectory(lib)
 
