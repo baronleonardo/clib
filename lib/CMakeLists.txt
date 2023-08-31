@@ -8,6 +8,8 @@ add_library(${target}
     unittest.c
     list.c
     file.c
+    print.c
+    allocator.c
 )
 
 target_include_directories(${target}

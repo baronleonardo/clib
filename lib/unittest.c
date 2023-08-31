@@ -173,7 +173,7 @@ __c_test_post_run__(CUnit_Test* self)
              __TEST_COLOR_FAILED__
              "\tfailed: %d\n"
              __TEST_COLOR_RESET__,
-             self->cases_positive - self->cases_negative,
+             self->cases_negative > self->cases_positive ? 0 : self->cases_positive - self->cases_negative,
              self->cases_negative,
              self->checks_positive,
              self->checks_negative);
