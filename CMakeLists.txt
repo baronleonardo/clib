@@ -12,5 +12,8 @@ endif()
 
 option(BUILD_SHARED_LIBS "Build libraries as SHARED" OFF)   # static by default
 option(test "enable tests" OFF)
+if(test)
+    enable_testing()
+endif()
 
 add_subdirectory(array)

@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include <assert.h>
 
-int main() {
+int main(void) {
     Array* array = array_create(sizeof(int));
 
     // test_push
