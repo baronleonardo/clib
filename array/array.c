@@ -144,7 +144,7 @@ array_remove_range(Array* self, size_t start_index, size_t range_len) {
         meta->len -= range_len;
         return start_ptr;
     } else {
-        uint8_t tmp[range_size];
+        uint8_t* tmp = malloc(range_size);
         uint8_t* end_ptr = meta->data + ((start_index + range_len) * meta->element_size);
         size_t right_range_size = (meta->len - (start_index + range_len)) * meta->element_size;
 
@@ -154,6 +154,7 @@ array_remove_range(Array* self, size_t start_index, size_t range_len) {
 
         meta->len -= range_len;
 
+        free(tmp);
         return start_ptr + right_range_size;
     }
 }
