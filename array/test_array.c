@@ -15,11 +15,11 @@ int main() {
     assert(array_get_len(array) == 5);
 
     // test array_pop
-    int* data = array_pop(array);
+    const int* data = array_pop(array);
     assert(*data == 16);
 
     // test array_remove_range
-    int* removed_range = array_remove_range(array, 1, 3);
+    const int* removed_range = array_remove_range(array, 1, 3);
     assert(removed_range[0] == 13);
     assert(removed_range[1] == 14);
     assert(removed_range[2] == 15);
