@@ -101,7 +101,7 @@ array_get_element_size(Array* self);
 /// @return same or new Array due to resizing
 ///         [you MUST replace the new Array with this]
 Array*
-array_push(Array* self, void* element);
+array_push(Array* self, const void* element);
 
 
 /// @brief pop one element from the end

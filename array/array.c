@@ -107,7 +107,7 @@ array_remove(Array* self, size_t index) {
         return array_pop(self);
     } else {
         uint8_t* last_element = meta->data + ((meta->len - 1) * meta->element_size);
-        const uint8_t* element = meta->data + (index * meta->element_size);
+        uint8_t* element = meta->data + (index * meta->element_size);
         uint8_t* tmp = malloc(meta->element_size);
         assert(tmp);
         assert(memcpy(tmp, element, meta->element_size));
