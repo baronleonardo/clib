@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.21)
 project(clib C)
-set(C_STANDARD 17)
+set(CMAKE_C_STANDARD 17)
 set(CMAKE_POSITION_INDEPENDENT_CODE ON) # PIC
 if (MSVC)
     # warning level 4
