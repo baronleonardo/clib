@@ -122,6 +122,7 @@ array_remove(Array* self, size_t index) {
 
         meta->len--;
 
+        free(tmp);
         return last_element;
     }
 }
