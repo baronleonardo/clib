@@ -109,7 +109,8 @@ array_remove(Array* self, size_t index) {
         void* last_element = meta->data + ((meta->len - 1) * meta->element_size);
         void* element = meta->data + (index * meta->element_size);
 
-        uint8_t tmp[(const size_t)meta->element_size];
+        const size_t element_size = meta->element_size;
+        uint8_t tmp[element_size];
         assert(memcpy(tmp, element, meta->element_size));
 
         assert(memmove(
@@ -136,7 +137,7 @@ array_remove_range(Array* self, size_t start_index, size_t range_len) {
     assert(start_index < (meta->len - 1));
     assert((start_index + range_len) <= meta->len);
 
-    size_t range_size = range_len * meta->element_size;
+    const size_t range_size = range_len * meta->element_size;
     void* start_ptr = self + (start_index * meta->element_size);
 
     if((start_index + range_len) == meta->len) {
