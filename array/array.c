@@ -108,9 +108,8 @@ array_remove(Array* self, size_t index) {
     } else {
         void* last_element = meta->data + ((meta->len - 1) * meta->element_size);
         void* element = meta->data + (index * meta->element_size);
-
-        const size_t element_size = meta->element_size;
-        uint8_t tmp[element_size];
+        uint8_t* tmp = malloc(meta->element_size);
+        assert(tmp);
         assert(memcpy(tmp, element, meta->element_size));
 
         assert(memmove(
