@@ -30,10 +30,10 @@ jobs:
       run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}}
 
     - name: Test
-      working-directory: ${{github.workspace}}/build
+      working-directory: ${{github.workspace}}/build/array
       # Execute tests defined by the CMake configuration.  
       # See https://cmake.org/cmake/help/latest/manual/ctest.1.html for more detail
-      run: ${{github.workspace}}/build/test/test
+      run: ${{github.workspace}}/build/array/test_array
       
   build-window:
     # The CMake configure and build commands are platform agnostic and should work equally well on Windows or Mac.
@@ -54,8 +54,8 @@ jobs:
       run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}}
 
     - name: Test
-      working-directory: ${{github.workspace}}/build/test
+      working-directory: ${{github.workspace}}/build/array
       # Execute tests defined by the CMake configuration.  
       # See https://cmake.org/cmake/help/latest/manual/ctest.1.html for more detail
-      run: ${{github.workspace}}/build/test/${{env.BUILD_TYPE}}/test.exe
+      run: ${{github.workspace}}/build/array/${{env.BUILD_TYPE}}/test_array.exe
       
