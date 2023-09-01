@@ -1,6 +1,7 @@
 #include <array.h>
 
 #include <stdio.h>
+#undef NDEBUG
 #include <assert.h>
 
 int main(void) {
