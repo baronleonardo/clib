@@ -1,12 +1,19 @@
-#include <array.h>
-#include <array_internal.h>
-
 #include <assert.h>
 #include <stdlib.h>
 #include <string.h>
 
 // #include <stdlib.h>
 // #include <stdio.h>
+
+#include <array.h>
+#include <array_internal.h>
+
+/// assert in Release build should evaluate the expr
+/// and do nothing after that
+#ifdef NDEBUG
+#undef assert
+#define assert(expr) (void)(expr)
+#endif
 
 Array*
 array_create(size_t element_size) {
