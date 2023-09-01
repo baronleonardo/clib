@@ -17,3 +17,4 @@ if(test)
 endif()
 
 add_subdirectory(array)
+add_subdirectory(common)
