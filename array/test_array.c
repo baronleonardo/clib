@@ -27,7 +27,7 @@ int main(void) {
     assert(array_get_len(array) == 1);
     assert(((int*)array)[0] == 12);
 
-    array_destroy(array);
+    array = array_destroy(array);
 
     return 0;
 }
