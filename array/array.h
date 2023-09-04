@@ -48,6 +48,14 @@ Array*
 array_create(size_t element_size);
 
 
+/// @brief same as `array_create` but with allocating capacity
+/// @param element_size 
+/// @param capacity maximum number of elements to be allocated, minimum capacity is 1
+/// @return 
+Array*
+array_create_with_capacity(size_t element_size, size_t capacity);
+
+
 /// @brief get array length
 /// @param self 
 /// @return array length

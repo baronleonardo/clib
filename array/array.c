@@ -10,13 +10,22 @@
 
 Array*
 array_create(size_t element_size) {
-    ArrayMeta* meta = calloc(1, sizeof(ArrayMeta) + element_size);
-    cassert(meta);
+    return array_create_with_capacity(element_size, 1);
+}
 
-    meta->capacity++;
-    meta->element_size = element_size;
+Array*
+array_create_with_capacity(size_t element_size, size_t capacity) {
+    if(capacity > 0) {
+        ArrayMeta* meta = calloc(1, sizeof(ArrayMeta) + (capacity * element_size));
+        cassert(meta);
 
-    return meta->data;
+        meta->capacity = capacity;
+        meta->element_size = element_size;
+
+        return meta->data;
+    } else {
+        return NULL;
+    }
 }
 
 size_t
