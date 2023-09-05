@@ -1,7 +1,6 @@
 #ifndef ARRAY_H
 #define ARRAY_H
 
-#include <stdint.h>
 #include <stddef.h>
 
 // #include <stdlib.h>
@@ -19,15 +18,6 @@
 // #define ffree(s) (free(s))
 // #undef free
 // #define free(s) (printf("free - remmaining: %ld\n", --malloc_index), free(s))
-
-/// @brief the design inspired by the wonderful cvector
-///        https://github.com/eteran/c-vector
-typedef struct {
-    size_t capacity;     /// maximum data that can be hold, note: this unit based not bytes based
-    size_t len;          /// current length, note: this unit based not bytes based
-    size_t element_size; /// size of the unit
-    uint8_t data[];      /// the actuall data
-} ArrayMeta;
 
 /// @brief you can always cast 'Array*' to anytype you like
 ///        and use it as oridinary heap allocated array
