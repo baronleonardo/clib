@@ -4,7 +4,7 @@ add_library(map
     map_internal.h
 )
 target_include_directories(map PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
-target_link_libraries(map PUBLIC common)
+target_link_libraries(map PUBLIC common panic)
 
 
 # install

@@ -7,7 +7,7 @@ if (MSVC)
     add_compile_options(/W4)
 else()
     # additional warnings
-    add_compile_options(-Wall -Wextra -Wpedantic)
+    add_compile_options(-Wall -Wextra -Wpedantic -Wno-flexible-array-extensions)
 endif()
 
 option(BUILD_SHARED_LIBS "Build libraries as SHARED" OFF)   # static by default

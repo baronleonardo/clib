@@ -15,9 +15,9 @@ int main(void) {
     assert(map_insert(&map, STR_W_LEN("abcd"), INT_W_LEN(3)));  // test collision
     assert(map_insert(&map, STR_W_LEN("abc"), INT_W_LEN(4)));   // test override
 
-    assert(*(int*)map_get(&map, STR_W_LEN("abcd")) == 3);
-    assert(*(int*)map_get(&map, STR_W_LEN("abc")) == 4);
-    assert(map_get(&map, STR_W_LEN("xyz")) == NULL);            // test not exist
+    assert(*(int*)map_get(map, STR_W_LEN("abcd")) == 3);
+    assert(*(int*)map_get(map, STR_W_LEN("abc")) == 4);
+    assert(map_get(map, STR_W_LEN("xyz")) == NULL);             // test not exist
 
     map_destroy(&map);
 }
