@@ -1,4 +1,3 @@
-#include <cassert.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -7,58 +6,78 @@
 
 #include <array.h>
 #include <array_internal.h>
+#include <panic.h>
 
-Array*
+Array
 array_create(size_t element_size) {
-    return array_create_with_capacity(element_size, 1);
+    return array_create_with_capacity(element_size, 1U, NULL);
 }
 
-Array*
-array_create_with_capacity(size_t element_size, size_t capacity) {
-    if(capacity > 0) {
-        ArrayMeta* meta = calloc(1, sizeof(ArrayMeta) + (capacity * element_size));
-        cassert(meta);
-
-        meta->capacity = capacity;
-        meta->element_size = element_size;
-
-        return meta->data;
-    } else {
+Array
+array_create_with_capacity(size_t element_size, size_t capacity, ArrayError* error) {
+    if(capacity == 0U) {
+        if(error) *error = ARRAY_ERROR_INVALID_NEW_CAPACITY;
         return NULL;
     }
+
+    ArrayMeta* meta = calloc(1U, sizeof(ArrayMeta) + (capacity * element_size));
+    panic_if_memory_failed(meta);
+
+    meta->capacity = capacity;
+    meta->element_size = element_size;
+
+    return meta->data;
 }
 
 size_t
-array_get_len(Array* self) {
-    cassert(self);
+array_get_len(Array self, ArrayError* error) {
+    if(!self) {
+        if(error) *error = ARRAY_ERROR_WRONG_SELF_OBJECT;
+        return 0U;
+    }
+
     return array_internal_get_meta(self)->len;
 }
 
 void
-array_set_len(Array* self, size_t new_len) {
-    cassert(self);
+array_set_len(Array self, size_t new_len, ArrayError* error) {
+    if(!self) {
+        if(error) *error = ARRAY_ERROR_WRONG_SELF_OBJECT;
+    }
 
     ArrayMeta* meta = array_internal_get_meta(self);
-    meta->len = new_len;
+    if(new_len < meta->capacity) {
+        meta->len = new_len;
+    } else {
+        if(error) *error = ARRAY_ERROR_INVALID_NEW_LENGTH;
+    }
 }
 
 size_t
-array_get_capacity(Array* self) {
-    cassert(self);
+array_get_capacity(Array self, ArrayError* error) {
+    if(!self) {
+        if(error) *error = ARRAY_ERROR_WRONG_SELF_OBJECT;
+        return 0U;
+    }
+
     return array_internal_get_meta(self)->capacity;
 }
 
-Array*
-array_set_capacity(Array* self, size_t new_capacity) {
-    cassert(self);
+Array
+array_set_capacity(Array self, size_t new_capacity, ArrayError* error) {
+    if(!self) {
+        if(error) *error = ARRAY_ERROR_WRONG_SELF_OBJECT;
+        return NULL;
+    }
+
     ArrayMeta* meta = array_internal_get_meta(self);
 
-    if(new_capacity == 0) {
+    if(new_capacity == 0U) {
         new_capacity++;
     }
 
     meta = realloc(meta, sizeof(ArrayMeta) + (new_capacity * meta->element_size));
-    cassert(meta);
+    panic_if_memory_failed(meta);
 
     meta->capacity = new_capacity;
 
@@ -66,26 +85,40 @@ array_set_capacity(Array* self, size_t new_capacity) {
 }
 
 size_t
-array_get_element_size(Array* self) {
-    cassert(self);
+array_get_element_size(Array self, ArrayError* error) {
+    if(!self) {
+        if(error) *error = ARRAY_ERROR_WRONG_SELF_OBJECT;
+        return 0U;
+    }
+
     return array_internal_get_meta(self)->element_size;
 }
 
-Array*
-array_push(Array* self, const void* element) {
-    cassert(self);
-    cassert(element);
-
-    ArrayMeta* meta = array_internal_get_meta(self);
-    cassert(meta->len != SIZE_MAX);
-  
-    if((meta->len + 1) > meta->capacity) {
-        meta->capacity *= 2;
-        meta = realloc(meta, sizeof(ArrayMeta) + (meta->capacity * meta->element_size));
-        cassert(meta);
+Array
+array_push(Array self, const void* element, ArrayError* error) {
+    if(!self) {
+        if(error) *error = ARRAY_ERROR_WRONG_SELF_OBJECT;
+        return NULL;
     }
 
-    cassert(memcpy(meta->data + (meta->len * meta->element_size), element, meta->element_size));
+    if(!element) {
+        if(error) *error = ARRAY_ERROR_INVALID_NEW_ELEMENT;
+        return NULL;
+    }
+
+    ArrayMeta* meta = array_internal_get_meta(self);
+    if(meta->len == SIZE_MAX) {
+        if(error) *error = ARRAY_ERROR_REACHED_MAX_LENGTH;
+        return self;
+    }
+
+    if((meta->len + 1U) > meta->capacity) {
+        meta->capacity *= 2;
+        meta = realloc(meta, sizeof(ArrayMeta) + (meta->capacity * meta->element_size));
+        panic_if_memory_failed(meta);
+    }
+
+    panic_if_memory_failed(memcpy(meta->data + (meta->len * meta->element_size), element, meta->element_size));
 
     meta->len++;
 
@@ -93,58 +126,83 @@ array_push(Array* self, const void* element) {
 }
 
 void*
-array_pop(Array* self) {
-    cassert(self);
+array_pop(Array self, ArrayError* error) {
+    if(!self) {
+        if(error) *error = ARRAY_ERROR_WRONG_SELF_OBJECT;
+        return NULL;
+    }
 
     ArrayMeta* meta = array_internal_get_meta(self);
-    cassert(meta->len > 0);
-
-    uint8_t* element = meta->data + ((meta->len - 1) * meta->element_size);
-    meta->len--;
-
-    return element;
-}
-
-void*
-array_remove(Array* self, size_t index) {
-    cassert(self);
-
-    ArrayMeta* meta = array_internal_get_meta(self);
-    cassert(meta->len > 0);
-
-    if(index == (meta->len - 1)) {
-        return array_pop(self);
-    } else {
-        uint8_t* last_element = meta->data + ((meta->len - 1) * meta->element_size);
-        uint8_t* element = meta->data + (index * meta->element_size);
-        uint8_t* tmp = malloc(meta->element_size);
-        cassert(tmp);
-        cassert(memcpy(tmp, element, meta->element_size));
-
-        cassert(memmove(
-            element,
-            element + meta->element_size,
-            (meta->len - index) * meta->element_size
-        ));
-
-        cassert(memcpy(last_element, tmp, meta->element_size));
-
+    if(meta->len > 0U) {
+        uint8_t* element = meta->data + ((meta->len - 1U) * meta->element_size);
         meta->len--;
 
-        free(tmp);
-        return last_element;
+        return element;
+    } else {
+        if(error) *error = ARRAY_ERROR_INVALID_LENGTH;
+        return NULL;
     }
 }
 
 void*
-array_remove_range(Array* self, size_t start_index, size_t range_len) {
-    cassert(self);
-    cassert(range_len);
+array_remove(Array self, size_t index, ArrayError* error) {
+    if(!self) {
+        if(error) *error = ARRAY_ERROR_WRONG_SELF_OBJECT;
+        return NULL;
+    }
 
     ArrayMeta* meta = array_internal_get_meta(self);
-    cassert(meta->len > 0);
-    cassert(start_index < (meta->len - 1));
-    cassert((start_index + range_len) <= meta->len);
+    if(meta->len > 0U) {
+        if(index == (meta->len - 1U)) {
+            return array_pop(self, error);
+        } else {
+            uint8_t* last_element = meta->data + ((meta->len - 1U) * meta->element_size);
+            uint8_t* element = meta->data + (index * meta->element_size);
+            uint8_t* tmp = malloc(meta->element_size);
+            panic_if_memory_failed(tmp);
+            panic_if_memory_failed(memcpy(tmp, element, meta->element_size));
+
+            panic_if_memory_failed(memmove(
+                element,
+                element + meta->element_size,
+                (meta->len - index) * meta->element_size
+            ));
+
+            panic_if_memory_failed(memcpy(last_element, tmp, meta->element_size));
+
+            meta->len--;
+
+            free(tmp);
+            return last_element;
+        }
+    } else {
+        if(error) *error = ARRAY_ERROR_INVALID_LENGTH;
+        return NULL;
+    }
+}
+
+void*
+array_remove_range(Array self, size_t start_index, size_t range_len, ArrayError* error) {
+    if(!self) {
+        if(error) *error = ARRAY_ERROR_WRONG_SELF_OBJECT;
+        return NULL;
+    }
+
+    ArrayMeta* meta = array_internal_get_meta(self);
+    if(meta->len == 0U) {
+        if(error) *error = ARRAY_ERROR_INVALID_LENGTH;
+        return 0U;
+    }
+
+    if(start_index >= (meta->len - 1U)) {
+        if(error) *error = ARRAY_ERROR_INVALID_INDEX;
+        return 0U;
+    }
+
+    if((start_index + range_len) > meta->len) {
+        if(error) *error = ARRAY_ERROR_INVALID_RANGE_LENGTH;
+        return 0U;
+    }
 
     const size_t range_size = range_len * meta->element_size;
     uint8_t* start_ptr = meta->data + (start_index * meta->element_size);
@@ -157,9 +215,9 @@ array_remove_range(Array* self, size_t start_index, size_t range_len) {
         const uint8_t* end_ptr = meta->data + ((start_index + range_len) * meta->element_size);
         size_t right_range_size = (meta->len - (start_index + range_len)) * meta->element_size;
 
-        cassert(memmove(tmp, start_ptr, range_size));
-        cassert(memcpy(start_ptr, end_ptr, right_range_size));
-        cassert(memcpy(start_ptr + right_range_size, tmp, range_size));
+        panic_if_memory_failed(memmove(tmp, start_ptr, range_size));
+        panic_if_memory_failed(memcpy(start_ptr, end_ptr, right_range_size));
+        panic_if_memory_failed(memcpy(start_ptr + right_range_size, tmp, range_size));
 
         meta->len -= range_len;
 
@@ -168,9 +226,12 @@ array_remove_range(Array* self, size_t start_index, size_t range_len) {
     }
 }
 
-Array*
-array_destroy(Array* self) {
-    cassert(self);
+Array
+array_destroy(Array self, ArrayError* error) {
+    if(!self) {
+        if(error) *error = ARRAY_ERROR_WRONG_SELF_OBJECT;
+        return NULL;
+    }
 
     ArrayMeta* meta = array_internal_get_meta(self);
     free(meta);
