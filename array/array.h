@@ -3,18 +3,6 @@
 
 #include <stddef.h>
 
-typedef enum {
-    ARRAY_ERROR_NONE,
-    ARRAY_ERROR_INVALID_NEW_CAPACITY,
-    ARRAY_ERROR_INVALID_NEW_LENGTH,
-    ARRAY_ERROR_INVALID_LENGTH,
-    ARRAY_ERROR_INVALID_RANGE_LENGTH,
-    ARRAY_ERROR_INVALID_NEW_ELEMENT,
-    ARRAY_ERROR_INVALID_INDEX,
-    ARRAY_ERROR_REACHED_MAX_LENGTH,
-    ARRAY_ERROR_WRONG_SELF_OBJECT,
-} ArrayError;
-
 /// @brief you can always cast 'Array' to anytype you like
 ///        and use it as oridinary heap allocated array
 typedef void* Array;
