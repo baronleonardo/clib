@@ -40,7 +40,7 @@ str_add(Str* self, const char* cstring, size_t max_len) {
         meta->capacity += cstring_len;
     }
 
-    cassert(strcpy(meta->data + meta->len, cstring));
+    cassert(strncpy(meta->data + meta->len, cstring, cstring_len));
     meta->len += cstring_len;
     meta->data[meta->len] = '\0';
 }
