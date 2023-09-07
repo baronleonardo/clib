@@ -18,6 +18,7 @@ endif()
 
 add_subdirectory(array)
 add_subdirectory(common)
+add_subdirectory(io)
 add_subdirectory(log)
 add_subdirectory(map)
 add_subdirectory(str)
