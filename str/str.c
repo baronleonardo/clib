@@ -7,6 +7,8 @@
 
 Str
 str_create(const char* cstring, size_t max_len) {
+    cassert(max_len > 0);
+
     size_t cstring_len = strnlen(cstring, max_len);
 
     StrMeta* meta = (StrMeta*)malloc(sizeof(StrMeta) + cstring_len + 1);
@@ -14,7 +16,7 @@ str_create(const char* cstring, size_t max_len) {
 
     meta->capacity = cstring_len + 1;
     meta->len = cstring_len;
-    memcpy(meta->data, cstring, cstring_len);
+    cassert(memcpy(meta->data, cstring, cstring_len));
     meta->data[cstring_len] = '\0';
 
     return meta->data;
@@ -23,28 +25,32 @@ str_create(const char* cstring, size_t max_len) {
 void
 str_add(Str* self, const char* cstring, size_t max_len) {
     cassert(self && *self);
-    
-    if(cstring) {
-        StrMeta* meta = str_internal_get_meta(*self);
-        size_t cstring_len = strnlen(cstring, max_len);
+    cassert(cstring);
+    cassert(max_len > 0);
 
-        // resize
-        if((meta->len + cstring_len + 1) > meta->capacity) {
-            *self = realloc(*self, meta->capacity + cstring_len);
-            cassert(*self);
+    StrMeta* meta = str_internal_get_meta(*self);
+    size_t cstring_len = strnlen(cstring, max_len);
 
-            meta = str_internal_get_meta(*self);
-            meta->capacity += cstring_len;
-        }
+    // resize
+    if((meta->len + cstring_len + 1) > meta->capacity) {
+        *self = realloc(*self, meta->capacity + cstring_len);
+        cassert(*self);
 
-        cassert(strcpy(meta->data + meta->len, cstring));
-        meta->len += cstring_len;
-        meta->data[meta->len] = '\0';
+        meta = str_internal_get_meta(*self);
+        meta->capacity += cstring_len;
     }
+
+    cassert(strcpy(meta->data + meta->len, cstring));
+    meta->len += cstring_len;
+    meta->data[meta->len] = '\0';
 }
 
 bool
 str_remove(Str self, const char* cstring, size_t max_len) {
+    cassert(self);
+    cassert(cstring);
+    cassert(max_len > 0);
+
     StrMeta* meta = NULL;
     size_t cstring_len = 0;
     char* substring_ptr = str_internal_search(self, cstring, max_len, &meta, &cstring_len);
@@ -65,6 +71,10 @@ str_remove(Str self, const char* cstring, size_t max_len) {
 
 char*
 str_search(Str self, const char* cstring, size_t max_len) {
+    cassert(self);
+    cassert(cstring);
+    cassert(max_len > 0);
+
     return str_internal_search(self, cstring, max_len, NULL, NULL);
 }
 
