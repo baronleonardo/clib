@@ -37,18 +37,16 @@ array_create(size_t element_size);
 /// @brief same as `array_create` but with allocating capacity
 /// @param element_size 
 /// @param capacity maximum number of elements to be allocated, minimum capacity is 1
-/// @param error [This could be NULL] return error if exists
 /// @return 
 Array
-array_create_with_capacity(size_t element_size, size_t capacity, ArrayError* error);
+array_create_with_capacity(size_t element_size, size_t capacity);
 
 
 /// @brief get array length
 /// @param self 
-/// @param error [This could be NULL] return error if exists
 /// @return array length
 size_t
-array_get_len(Array self, ArrayError* error);
+array_get_len(Array self);
 
 
 /// @brief set array length
@@ -57,9 +55,8 @@ array_get_len(Array self, ArrayError* error);
 ///        to manipulate the data by yourself
 /// @param self 
 /// @param new_len 
-/// @param error [This could be NULL] return error if exists
 void
-array_set_len(Array self, size_t new_len, ArrayError* error);
+array_set_len(Array self, size_t new_len);
 
 
 /// @brief get array capacity
@@ -67,10 +64,9 @@ array_set_len(Array self, size_t new_len, ArrayError* error);
 ///        example: 'capacity = 10' means
 ///                 we can have up to '10 * element_size' bytes
 /// @param self 
-/// @param error [This could be NULL] return error if exists
 /// @return the capacity of the array
 size_t
-array_get_capacity(Array self, ArrayError* error);
+array_get_capacity(Array self);
 
 
 /// @brief set capacity
@@ -79,66 +75,59 @@ array_get_capacity(Array self, ArrayError* error);
 ///        to manipulate the data by yourself
 /// @param self 
 /// @param new_capacity 
-/// @param error [This could be NULL] return error if exists
 /// @return same or new Array due to resizing
 ///         [you MUST replace the new Array with this]
 Array
-array_set_capacity(Array self, size_t new_capacity, ArrayError* error);
+array_set_capacity(Array self, size_t new_capacity);
 
 
 /// @brief get elemet_size in bytes
 /// @param self 
-/// @param error [This could be NULL] return error if exists
 /// @return elemet_size in bytes
 size_t
-array_get_element_size(Array self, ArrayError* error);
+array_get_element_size(Array self);
 
 
 /// @brief push one element at the end
 /// @param self 
 /// @param element if you want to push literals (example: 3, 5 or 10 ...)
 ///                array_push(array, &(int){3});
-/// @param error [This could be NULL] return error if exists
 /// @return same or new Array due to resizing
 ///         [you MUST replace the new Array with this]
 Array
-array_push(Array self, const void* element, ArrayError* error);
+array_push(Array self, const void* element);
 
 
 /// @brief pop one element from the end
 ///        [this will NOT resize the array]
 /// @param self 
-/// @param error [This could be NULL] return error if exists
 /// @return pointer of the popped element
 void*
-array_pop(Array self, ArrayError* error);
+array_pop(Array self);
 
 
 /// @brief remove element from Array
 ///        [beware this function is costy]
 /// @param self 
 /// @param index index to be removed
-/// @param error [This could be NULL] return error if exists
 /// @return the removed element
 void*
-array_remove(Array self, size_t index, ArrayError* error);
+array_remove(Array self, size_t index);
 
 
 /// @brief remove a range of elements from Array
 /// @param self 
 /// @param start_index 
 /// @param range_len range length
-/// @param error [This could be NULL] return error if exists
 /// @return the start of the removed range
 void*
-array_remove_range(Array self, size_t start_index, size_t range_len, ArrayError* error);
+array_remove_range(Array self, size_t start_index, size_t range_len);
 
 /// @brief destroy the array from the memory
 /// @param self 
-/// @param error [This could be NULL] return error if exists
 /// @return this will always return NULL
 ///         best practice: array = array_destroy(array);
 Array
-array_destroy(Array self, ArrayError* error);
+array_destroy(Array self);
 
 #endif // ARRAY_H

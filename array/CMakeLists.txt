@@ -4,7 +4,7 @@ add_library(array
     array_internal.h
 )
 target_include_directories(array PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
-target_link_libraries(array PUBLIC panic)
+target_link_libraries(array PUBLIC common)
 
 
 # install
