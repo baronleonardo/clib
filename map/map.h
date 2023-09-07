@@ -7,16 +7,9 @@
 
 struct Map {
     bool is_filled;
-    uint8_t data[1]; // key and value, the actual size is known at runtime
+    uint8_t data[1]; // key and value, the actual size is `max_key_size + max_value_size`
 };
 typedef struct Map* Map;
-
-enum MapError {
-    MapError_none,
-    MapError_insert_large_key_size,
-    MapError_insert_large_value_size,
-    MapError_insert_reached_max_capacity,
-};
 
 Map
 map_create(size_t max_capacity, size_t max_key_size, size_t max_value_size);

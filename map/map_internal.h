@@ -15,7 +15,11 @@ typedef struct {
     size_t len;
     size_t max_key_size;
     size_t max_value_size;
+#if defined(_MSC_VER) && !defined(__INTEL_COMPILER)   // MSVC on windows
+    struct Map data[1];
+#else
     struct Map data[];
+#endif
 } MapMeta;
 
 inline static MapMeta*

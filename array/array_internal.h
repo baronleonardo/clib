@@ -12,7 +12,11 @@ typedef struct {
     size_t capacity;     /// maximum data that can be hold, note: this unit based not bytes based
     size_t len;          /// current length, note: this unit based not bytes based
     size_t element_size; /// size of the unit
+#if defined(_MSC_VER) && !defined(__INTEL_COMPILER)   // MSVC on windows
+    uint8_t data[1];      /// the actuall data
+#else
     uint8_t data[];      /// the actuall data
+#endif
 } ArrayMeta;
 
 inline static ArrayMeta*

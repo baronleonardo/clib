@@ -12,7 +12,11 @@
 typedef struct {
     size_t capacity;
     size_t len;
+#if defined(_MSC_VER) && !defined(__INTEL_COMPILER)   // MSVC on windows
+    char data[1];
+#else
     char data[];
+#endif
 } StrMeta;
 
 static inline StrMeta*
