@@ -7,7 +7,7 @@
 
 struct Map {
     bool is_filled;
-    uint8_t data[]; // key and value
+    uint8_t data[1]; // key and value, the actual size is known at runtime
 };
 typedef struct Map* Map;
 
