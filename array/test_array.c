@@ -8,11 +8,11 @@ int main(void) {
     Array array = array_create(sizeof(int));
 
     // test_push
-    array = array_push(array, &(int){12});
-    array = array_push(array, &(int){13});
-    array = array_push(array, &(int){14});
-    array = array_push(array, &(int){15});
-    array = array_push(array, &(int){16});
+    array_push(&array, &(int){12});
+    array_push(&array, &(int){13});
+    array_push(&array, &(int){14});
+    array_push(&array, &(int){15});
+    array_push(&array, &(int){16});
 
     assert(array_get_len(array) == 5);
 
@@ -29,7 +29,7 @@ int main(void) {
     assert(array_get_len(array) == 1);
     assert(((int*)array)[0] == 12);
 
-    array = array_destroy(array);
+    array_destroy(&array);
 
     return 0;
 }

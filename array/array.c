@@ -48,19 +48,19 @@ array_get_capacity(Array self) {
     return array_internal_get_meta(self)->capacity;
 }
 
-Array
-array_set_capacity(Array self, size_t new_capacity) {
-    cassert(self);
+void
+array_set_capacity(Array* self, size_t new_capacity) {
+    cassert(self && *self);
     cassert(new_capacity > 0);
 
-    ArrayMeta* meta = array_internal_get_meta(self);
+    ArrayMeta* meta = array_internal_get_meta(*self);
 
     meta = realloc(meta, sizeof(ArrayMeta) + (new_capacity * meta->element_size));
     cassert(meta);
 
     meta->capacity = new_capacity;
 
-    return meta->data;
+    *self = meta->data;
 }
 
 size_t
@@ -70,12 +70,12 @@ array_get_element_size(Array self) {
     return array_internal_get_meta(self)->element_size;
 }
 
-Array
-array_push(Array self, const void* element) {
-    cassert(self);
+void
+array_push(Array* self, const void* element) {
+    cassert(self && *self);
     cassert(element);
 
-    ArrayMeta* meta = array_internal_get_meta(self);
+    ArrayMeta* meta = array_internal_get_meta(*self);
     cassert(meta->len < SIZE_MAX);
 
     if((meta->len + 1U) > meta->capacity) {
@@ -88,7 +88,7 @@ array_push(Array self, const void* element) {
 
     meta->len++;
 
-    return meta->data;
+    *self = meta->data;
 }
 
 void*
@@ -166,12 +166,12 @@ array_remove_range(Array self, size_t start_index, size_t range_len) {
     }
 }
 
-Array
-array_destroy(Array self) {
+void
+array_destroy(Array* self) {
     cassert(self);
 
-    ArrayMeta* meta = array_internal_get_meta(self);
+    ArrayMeta* meta = array_internal_get_meta(*self);
     free(meta);
 
-    return NULL;
+    *self = NULL;
 }

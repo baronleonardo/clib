@@ -73,12 +73,10 @@ array_get_capacity(Array self);
 ///        [beware this is DANGEROUS]
 ///        this is useful if you want
 ///        to manipulate the data by yourself
-/// @param self 
+/// @param self address of self
 /// @param new_capacity 
-/// @return same or new Array due to resizing
-///         [you MUST replace the new Array with this]
-Array
-array_set_capacity(Array self, size_t new_capacity);
+void
+array_set_capacity(Array* self, size_t new_capacity);
 
 
 /// @brief get elemet_size in bytes
@@ -89,13 +87,11 @@ array_get_element_size(Array self);
 
 
 /// @brief push one element at the end
-/// @param self 
+/// @param self pointer to self
 /// @param element if you want to push literals (example: 3, 5 or 10 ...)
 ///                array_push(array, &(int){3});
-/// @return same or new Array due to resizing
-///         [you MUST replace the new Array with this]
-Array
-array_push(Array self, const void* element);
+void
+array_push(Array* self, const void* element);
 
 
 /// @brief pop one element from the end
@@ -125,9 +121,7 @@ array_remove_range(Array self, size_t start_index, size_t range_len);
 
 /// @brief destroy the array from the memory
 /// @param self 
-/// @return this will always return NULL
-///         best practice: array = array_destroy(array);
-Array
-array_destroy(Array self);
+void
+array_destroy(Array* self);
 
 #endif // ARRAY_H
