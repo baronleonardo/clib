@@ -20,7 +20,7 @@ typedef struct {
 
 inline static MapMeta*
 map_internal_get_meta(const Map self) {
-    assert(self);
+    cassert(self);
     return (&((MapMeta*)(self))[-1]);
 }
 
