@@ -6,16 +6,16 @@
 typedef FILE* File;
 
 File
-io_file_open(const char* path, size_t path_len, const char mode[static 1]);
+io_file_open(const char* path, size_t path_len, const char mode[]);
 
 size_t
 io_file_size(File self);
 
 size_t
-io_file_read(File self, char buf[static 1], size_t buf_size);
+io_file_read(File self, char buf[], size_t buf_size);
 
 size_t
-io_file_write(File self, char buf[static 1], size_t buf_size);
+io_file_write(File self, char buf[], size_t buf_size);
 
 void
 io_file_close(File* self);

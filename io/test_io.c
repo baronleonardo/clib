@@ -4,7 +4,7 @@
 #include <assert.h>
 #include <string.h>
 
-#define STR(str) (str), sizeof((str))
+#define STR(str) (str), (sizeof((str)) - 1)
 
 int main(void) {
     enum { buf_len = 100 };
@@ -26,5 +26,6 @@ int main(void) {
     assert(io_file_write(f, buf, out_len));
     io_file_close(&f);
     io_delete(STR(test_assets "/out-file.txt"));
-    io_delete(STR(test_assets "/folder"));
+
+    io_delete_recursively(STR(test_assets "/folder"));
 }

@@ -14,7 +14,7 @@ log_internal_get_cur_time(char* time_buf, size_t time_buf_size) {
 
 #if defined(__unix__)
     localtime_r(&rawtime, &timeinfo);
-#elif defined(_MSC_VER) && !defined(__INTEL_COMPILER)   // MSVC on windows
+#elif defined(_WIN32)
     localtime_s(&timeinfo, &rawtime);
 #else
     timeinfo = localtime(&rawtime);
