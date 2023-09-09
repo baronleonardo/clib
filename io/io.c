@@ -54,7 +54,7 @@ io_file_read(File self, char buf[], size_t buf_size) {
     size_t read_amount = MIN(buf_size, fsize);
 
     size_t read_size = fread(buf, sizeof(buf[0]), read_amount, self);
-    cassert_always_perror((ferror(self) == 0) && (feof(self) == 0), "");
+    cassert_always_perror(ferror(self) == 0, "");
 
     return read_size;
 }
