@@ -205,8 +205,9 @@ io_delete(const char* path, size_t path_len) {
         cassert_always(RemoveDirectoryA(path));
         return;
     }
+#else
+    cassert_always(path_len < PATH_MAX);
 #endif
-    cassert_always(path_len < MAX_PATH);
     cassert_always_perror((remove(path) == 0), path);
 }
 
