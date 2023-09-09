@@ -6,6 +6,12 @@
 
 #define STR(str) (str), (sizeof((str)) - 1)
 
+bool
+handler(const char* path, size_t path_len) {
+    puts(path);
+    return true;
+}
+
 int main(void) {
     enum { buf_len = 100 };
     char buf[buf_len];
@@ -27,5 +33,25 @@ int main(void) {
     io_file_close(&f);
     io_delete(STR(test_assets "/out-file.txt"));
 
+    // test io_delete_recursively
+    io_dir_create(STR(test_assets "/folder"));
+    File file1 = io_file_open(STR(test_assets "/folder/1.txt"), "w");
+    io_file_close(&file1);
+    io_dir_create(STR(test_assets "/folder/folder2"));
+    File file2 = io_file_open(STR(test_assets "/folder/folder2/.2.txt"), "w");
+    io_file_close(&file2);
     io_delete_recursively(STR(test_assets "/folder"));
+
+    // test io_dir_empty
+    io_dir_create(STR(test_assets "/folder"));
+    assert(!io_dir_empty(STR(test_assets "/folder")));
+    io_delete(STR(test_assets "/folder"));
+
+    // test io_foreach
+    io_foreach(STR(test_assets), handler);
+
+    // test io_delete
+    io_dir_create(STR(test_assets "/folder2"));
+    assert(io_exists(STR(test_assets "/folder2")));
+    io_delete(STR(test_assets "/folder2"));
 }
