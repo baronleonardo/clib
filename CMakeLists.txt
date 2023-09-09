@@ -1,38 +1,24 @@
-cmake_minimum_required(VERSION 3.16)
-
+cmake_minimum_required(VERSION 3.21)
 project(clib C)
-
-if(NOT WIN32)
-set(target "linux" CACHE STRING "Choose one of 'linux'(default),'windows', 'macos'")
+set(CMAKE_C_STANDARD 17)
+set(CMAKE_POSITION_INDEPENDENT_CODE ON) # PIC
+if (MSVC)
+    # warning level 4
+    add_compile_options(/W4)
+else()
+    # additional warnings
+    add_compile_options(-Wall -Wpedantic -Wno-flexible-array-extensions)
 endif()
 
-option(example "build examples" OFF)
-option(test "build tests" OFF)
-option(zig "build using zig compiler" OFF)
-
-set(CMAKE_C_STANDARD_REQUIRED c17)
-if(NOT WIN32 AND zig)
-    set(CMAKE_C_COMPILER ${CMAKE_SOURCE_DIR}/bin/zig-cc)
-    message(${target})
-    if(${target} STREQUAL "windows")
-        set(CMAKE_C_COMPILER_ARG1 --target=x86_64-windows-gnu)
-    elseif(${target} STREQUAL "macos")
-        set(CMAKE_C_COMPILER_ARG1 --target=x86_64-macos-gnu)
-    elseif(${target} STREQUAL "linux")
-        set(CMAKE_C_COMPILER_ARG1 --target=x86_64-linux-gnu)
-    else()
-        message(FATAL_ERROR "target: Choose one of 'linux'(default),'windows', 'macos'")
-    endif()
-    set(CMAKE_AR ${CMAKE_SOURCE_DIR}/bin/zig-ar)
-    set(CMAKE_RANLIB ${CMAKE_SOURCE_DIR}/bin/zig-ranlib)
-endif()
-
-add_subdirectory(lib)
-
-if(example)
-    add_subdirectory(example)
-endif()
-
+option(BUILD_SHARED_LIBS "Build libraries as SHARED" OFF)   # static by default
+option(test "enable tests" OFF)
 if(test)
-    add_subdirectory(test)
+    enable_testing()
 endif()
+
+add_subdirectory(array)
+add_subdirectory(common)
+add_subdirectory(io)
+add_subdirectory(log)
+add_subdirectory(map)
+add_subdirectory(str)
