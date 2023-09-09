@@ -21,7 +21,7 @@ array_create_with_capacity(size_t element_size, size_t capacity) {
     meta->capacity = capacity;
     meta->element_size = element_size;
 
-    return meta->data;
+    return array_internal_get_data(meta);
 }
 
 size_t
@@ -60,7 +60,7 @@ array_set_capacity(Array* self, size_t new_capacity) {
 
     meta->capacity = new_capacity;
 
-    *self = meta->data;
+    *self = array_internal_get_data(meta);
 }
 
 size_t
@@ -84,11 +84,15 @@ array_push(Array* self, const void* element) {
         cassert(meta);
     }
 
-    cassert(memcpy(meta->data + (meta->len * meta->element_size), element, meta->element_size));
+    cassert(memcpy(
+        (uint8_t*)array_internal_get_data(meta) + (meta->len * meta->element_size),
+        element,
+        meta->element_size
+    ));
 
     meta->len++;
 
-    *self = meta->data;
+    *self = array_internal_get_data(meta);
 }
 
 void*
@@ -98,7 +102,7 @@ array_pop(Array self) {
     ArrayMeta* meta = array_internal_get_meta(self);
     cassert(meta->len > 0U);
 
-    uint8_t* element = meta->data + ((meta->len - 1U) * meta->element_size);
+    uint8_t* element = (uint8_t*)array_internal_get_data(meta) + ((meta->len - 1U) * meta->element_size);
     meta->len--;
 
     return element;
@@ -114,8 +118,9 @@ array_remove(Array self, size_t index) {
     if(index == (meta->len - 1U)) {
         return array_pop(self);
     } else {
-        uint8_t* last_element = meta->data + ((meta->len - 1U) * meta->element_size);
-        uint8_t* element = meta->data + (index * meta->element_size);
+        Array array_data = array_internal_get_data(meta);
+        uint8_t* last_element = (uint8_t*)array_data + ((meta->len - 1U) * meta->element_size);
+        uint8_t* element = (uint8_t*)array_data + (index * meta->element_size);
         uint8_t* tmp = malloc(meta->element_size);
         cassert(tmp);
         cassert(memcpy(tmp, element, meta->element_size));
@@ -145,14 +150,14 @@ array_remove_range(Array self, size_t start_index, size_t range_len) {
     cassert((start_index + range_len) <= meta->len);
 
     const size_t range_size = range_len * meta->element_size;
-    uint8_t* start_ptr = meta->data + (start_index * meta->element_size);
+    uint8_t* start_ptr = (uint8_t*)array_internal_get_data(meta) + (start_index * meta->element_size);
 
     if((start_index + range_len) == meta->len) {
         meta->len -= range_len;
         return start_ptr;
     } else {
         uint8_t* tmp = malloc(range_size);
-        const uint8_t* end_ptr = meta->data + ((start_index + range_len) * meta->element_size);
+        const uint8_t* end_ptr = (uint8_t*)array_internal_get_data(meta) + ((start_index + range_len) * meta->element_size);
         size_t right_range_size = (meta->len - (start_index + range_len)) * meta->element_size;
 
         cassert(memmove(tmp, start_ptr, range_size));

@@ -16,10 +16,10 @@ str_create(const char* cstring, size_t max_len) {
 
     meta->capacity = cstring_len + 1;
     meta->len = cstring_len;
-    cassert(memcpy(meta->data, cstring, cstring_len));
-    meta->data[cstring_len] = '\0';
+    cassert(memcpy(str_internal_get_data(meta), cstring, cstring_len));
+    str_internal_get_data(meta)[cstring_len] = '\0';
 
-    return meta->data;
+    return str_internal_get_data(meta);
 }
 
 void
@@ -41,12 +41,12 @@ str_add(Str* self, const char* cstring, size_t max_len) {
     }
 
 #if defined(_WIN32)
-    cassert(strncpy_s(meta->data + meta->len, meta->capacity - meta->len, cstring, cstring_len) == 0);
+    cassert(strncpy_s((Str)str_internal_get_data(meta) + meta->len, meta->capacity - meta->len, cstring, cstring_len) == 0);
 #else
-    cassert(strncpy(meta->data + meta->len, cstring, cstring_len));
+    cassert(strncpy(str_internal_get_data(meta) + meta->len, cstring, cstring_len));
 #endif
     meta->len += cstring_len;
-    meta->data[meta->len] = '\0';
+    str_internal_get_data(meta)[meta->len] = '\0';
 }
 
 bool
@@ -63,7 +63,7 @@ str_remove(Str self, const char* cstring, size_t max_len) {
         cassert(memmove(
             substring_ptr,
             substring_ptr + cstring_len,
-            (meta->data + meta->len) - (substring_ptr + cstring_len))
+            (str_internal_get_data(meta) + meta->len) - (substring_ptr + cstring_len))
         );
         *substring_ptr = '\0';
         meta->len -= cstring_len;

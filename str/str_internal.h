@@ -12,22 +12,17 @@
 typedef struct {
     size_t capacity;
     size_t len;
-#if defined(_MSC_VER) && !defined(__INTEL_COMPILER)   // MSVC on windows
-    char data[1];
-#else
-    char data[];
-#endif
 } StrMeta;
 
 static inline StrMeta*
 str_internal_get_meta(const Str self) {
     cassert(self);
-#if defined(_MSC_VER) && !defined(__INTEL_COMPILER)   // MSVC on windows
-    static const void* data_offset = &(((StrMeta*)NULL)->data);
-    return (StrMeta*)((uint8_t*)self - (uint8_t*)data_offset);
-#else
     return (&((StrMeta*)(self))[-1]);
-#endif
+}
+
+static inline Str
+str_internal_get_data(const StrMeta* meta) {
+    return (Str)(&(meta[1]));
 }
 
 static inline char*
@@ -41,8 +36,8 @@ str_internal_search(Str self, const char* cstring, size_t max_len, StrMeta** ret
         *return_cstring_len = cstring_len;
 
         for(size_t str_counter = 0; str_counter < meta->len; ++str_counter) {
-            if(memcmp(&meta->data[str_counter], cstring, cstring_len) == 0) {
-                return &meta->data[str_counter];
+            if(memcmp(&self[str_counter], cstring, cstring_len) == 0) {
+                return &self[str_counter];
             }
         }
     }

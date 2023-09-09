@@ -12,21 +12,16 @@ typedef struct {
     size_t capacity;     /// maximum data that can be hold, note: this unit based not bytes based
     size_t len;          /// current length, note: this unit based not bytes based
     size_t element_size; /// size of the unit
-#if defined(_MSC_VER) && !defined(__INTEL_COMPILER)   // MSVC on windows
-    uint8_t data[1];      /// the actuall data
-#else
-    uint8_t data[];      /// the actuall data
-#endif
 } ArrayMeta;
 
 inline static ArrayMeta*
 array_internal_get_meta(const Array self) {
-#if defined(_MSC_VER) && !defined(__INTEL_COMPILER)   // MSVC on windows
-    static const void* data_offset = &(((ArrayMeta*)NULL)->data);
-    return (ArrayMeta*)((uint8_t*)self - (uint8_t*)data_offset);
-#else
     return (&((ArrayMeta*)(self))[-1]);
-#endif
+}
+
+inline static Array*
+array_internal_get_data(const ArrayMeta* self) {
+    return (Array*)(&self[1]);
 }
 
 #endif // LIST_INTERNAL_H

@@ -17,7 +17,7 @@ map_create(size_t max_capacity, size_t max_key_size, size_t max_value_size) {
     meta->max_key_size = max_key_size;
     meta->max_value_size = max_value_size;
 
-    return meta->data;
+    return map_internal_get_data(meta);
 }
 
 bool
@@ -34,23 +34,20 @@ map_insert(Map* self, void* key, size_t key_size, void* value, size_t value_size
     cassert(value_size <= meta->max_value_size);
 
     size_t index = map_internal_hasing_algo(key, key_size, meta->capacity);
-    Map element = map_internal_get_element(*self, index);
+    MapElement element = map_internal_get_element(*self, index);
 
     // collision
     // find an empty slot using `Quadratic Probing`
-    if(element->is_filled && (memcmp(key, element->data, key_size) != 0)) {
-        for(size_t iii = 1; element->is_filled; ++iii) {
+    if(*element.is_filled && (memcmp(key, element.key, key_size) != 0)) {
+        for(size_t iii = 1; *element.is_filled; ++iii) {
             index = (index + (iii * iii)) % meta->capacity;
             element = map_internal_get_element(*self, index);
         }
     }
 
-    void* element_key = element->data;
-    void* element_value = (uint8_t*)element_key + meta->max_key_size;
-
-    cassert(memcpy(element_key, key, key_size));
-    cassert(memcpy(element_value, value, value_size));
-    element->is_filled = true;
+    cassert(memcpy(element.key, key, key_size));
+    cassert(memcpy(element.value, value, value_size));
+    *element.is_filled = true;
 
     meta->len++;
     return true;
@@ -62,10 +59,10 @@ map_get(const Map self, void* key, size_t key_size) {
     cassert(key);
     cassert(key_size > 0);
 
-    Map element = map_internal_search_and_get(self, key, key_size);
-    if(element) {
+    MapElement element = map_internal_search_and_get(self, key, key_size);
+    if(element.key != NULL) {
         MapMeta* meta = map_internal_get_meta(self);
-        return element->data + meta->max_key_size;
+        return (uint8_t*)(element.key) + meta->max_key_size;
     } else {
         return NULL;
     }
@@ -77,17 +74,14 @@ map_remove(Map self, void* key, size_t key_size) {
     cassert(key);
     cassert(key_size > 0);
 
-    Map element = map_internal_search_and_get(self, key, key_size);
-
-    if(element) {
+    MapElement element = map_internal_search_and_get(self, key, key_size);
+    if(element.key) {
         MapMeta* meta = map_internal_get_meta(self);
-        void* element_key = element->data;
-        void* element_value = (uint8_t*)element_key + meta->max_key_size;
 
         meta->len--;
-        element->is_filled = false;
-        cassert(memset(element_key, 0, meta->max_key_size));
-        return element_value;
+        *element.is_filled = false;
+        cassert(memset(element.key, 0, meta->max_key_size));
+        return element.value;
     } else {
         return NULL;
     }
