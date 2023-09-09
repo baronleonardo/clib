@@ -22,7 +22,12 @@ typedef struct {
 static inline StrMeta*
 str_internal_get_meta(const Str self) {
     cassert(self);
+#if defined(_MSC_VER) && !defined(__INTEL_COMPILER)   // MSVC on windows
+    static const void* data_offset = &(((StrMeta*)NULL)->data);
+    return (StrMeta*)((uint8_t*)self - (uint8_t*)data_offset);
+#else
     return (&((StrMeta*)(self))[-1]);
+#endif
 }
 
 static inline char*

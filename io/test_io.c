@@ -8,6 +8,7 @@
 
 bool
 handler(const char* path, size_t path_len) {
+    (void)path_len;
     puts(path);
     return true;
 }

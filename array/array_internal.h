@@ -21,9 +21,12 @@ typedef struct {
 
 inline static ArrayMeta*
 array_internal_get_meta(const Array self) {
-    // static const void* data_offset = &(((ArrayMeta*)NULL)->data);
-    // return (ArrayMeta*)(self - data_offset);
+#if defined(_MSC_VER) && !defined(__INTEL_COMPILER)   // MSVC on windows
+    static const void* data_offset = &(((ArrayMeta*)NULL)->data);
+    return (ArrayMeta*)((uint8_t*)self - (uint8_t*)data_offset);
+#else
     return (&((ArrayMeta*)(self))[-1]);
+#endif
 }
 
 #endif // LIST_INTERNAL_H

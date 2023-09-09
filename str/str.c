@@ -40,8 +40,8 @@ str_add(Str* self, const char* cstring, size_t max_len) {
         meta->capacity += cstring_len;
     }
 
-#if defined(_MSC_VER) && !defined(__INTEL_COMPILER)   // MSVC on windows
-    cassert(strncpy_s(meta->data + meta->len, cstring_len, cstring, cstring_len));
+#if defined(_WIN32)
+    cassert(strncpy_s(meta->data + meta->len, meta->capacity - meta->len, cstring, cstring_len) == 0);
 #else
     cassert(strncpy(meta->data + meta->len, cstring, cstring_len));
 #endif

@@ -25,7 +25,12 @@ typedef struct {
 inline static MapMeta*
 map_internal_get_meta(const Map self) {
     cassert(self);
+#if defined(_MSC_VER) && !defined(__INTEL_COMPILER)   // MSVC on windows
+    static const void* data_offset = &(((MapMeta*)NULL)->data);
+    return (MapMeta*)((uint8_t*)self - (uint8_t*)data_offset);
+#else
     return (&((MapMeta*)(self))[-1]);
+#endif
 }
 
 static inline size_t
@@ -43,7 +48,11 @@ map_internal_get_element(Map self, size_t index) {
     cassert(self);
 
     MapMeta* meta = map_internal_get_meta(self);
-    Map element = (Map)((uint8_t*)meta->data + (index * MAP_ELEMENT_SIZE(meta)));
+#if defined(_MSC_VER) && !defined(__INTEL_COMPILER)   // MSVC on windows
+    Map element = (Map)((uint8_t*)(meta->data) - sizeof(uint8_t) + (index * MAP_ELEMENT_SIZE(meta)));
+#else
+    Map element = (Map)((uint8_t*)(meta->data) + (index * MAP_ELEMENT_SIZE(meta)));
+#endif
 
 //     bool* is_filled_addr = (bool*)self->data + 
 //         (index * (self->max_key_size + self->max_value_size + sizeof(bool)));

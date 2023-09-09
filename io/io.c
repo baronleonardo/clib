@@ -88,7 +88,7 @@ io_dir_create(const char* dir_path, size_t path_len) {
     if(!io_exists(dir_path, path_len)) {
 #if defined(_WIN32)
         cassert_always(path_len < MAX_PATH);
-        cassert_alwyas(CreateDirectoryA(dir_path, NULL));
+        cassert_always(CreateDirectoryA(dir_path, NULL));
 #else
         cassert_always(path_len < PATH_MAX);
         const mode_t mkdir_mode_mask = 0777;
@@ -126,6 +126,30 @@ io_dir_empty(const char* dir_path, size_t path_len) {
 
 #if defined(_WIN32)
     cassert_always(path_len < MAX_PATH);
+
+    WIN32_FIND_DATA cur_file;
+    HANDLE find_handler;
+    enum { buf_len = MAX_PATH };
+    char buf[buf_len];
+    int number_of_existing_paths = 0;
+
+    cassert(memcpy_s(buf, buf_len, dir_path, path_len) == 0);
+    buf[path_len] = '/';
+    buf[path_len + 1] = '*';
+    buf[path_len + 2] = '\0';
+    path_len += 2;
+
+    find_handler = FindFirstFile(buf, &cur_file);
+    do {
+        cassert_always(find_handler != INVALID_HANDLE_VALUE);
+
+        if(number_of_existing_paths > 2) break; // skip '.' and '..'
+        number_of_existing_paths++;
+    } while(FindNextFile(find_handler, &cur_file));
+   
+    cassert(FindClose(find_handler));
+
+    return ((number_of_existing_paths > 2) ? true : false);
 #else
     cassert_always(path_len < PATH_MAX);
 
@@ -154,7 +178,12 @@ io_exists(const char* path, size_t path_len) {
 
 #if defined(_WIN32)
     cassert_always(path_len < MAX_PATH);
-    return PathFileExistsA(path);
+
+    size_t ftyp = GetFileAttributesA(path);
+    if (ftyp == INVALID_FILE_ATTRIBUTES)
+        return false;  //something is wrong with your path!
+
+    return true;
 #else
     cassert_always(path_len < PATH_MAX);
     struct stat path_stats = {0};
@@ -177,7 +206,7 @@ io_delete(const char* path, size_t path_len) {
         return;
     }
 #endif
-    cassert_always(path_len < PATH_MAX);
+    cassert_always(path_len < MAX_PATH);
     cassert_always_perror((remove(path) == 0), path);
 }
 
@@ -189,7 +218,7 @@ io_delete_recursively(const char* dir_path, size_t path_len) {
     cassert_always(io_dir(dir_path, path_len));
 
 #if defined(_WIN32)
-    cassert_always(path_len < PATH_MAX);
+    cassert_always(path_len < MAX_PATH);
 
     WIN32_FIND_DATA cur_file;
     HANDLE find_handler;
@@ -210,19 +239,16 @@ io_delete_recursively(const char* dir_path, size_t path_len) {
         // skip '.' and '..'
         if((strncmp(cur_file.cFileName, ".", filename_len) != 0) && (strncmp(cur_file.cFileName, "..", filename_len) != 0)) {
             cassert(memcpy_s(buf + path_len - 1, buf_len, cur_file.cFileName, filename_len) == 0);
+            buf[path_len - 1 + filename_len] = '\0';
 
             if(cur_file.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) {
-                buf[path_len - 1 + filename_len] = '/';
-                buf[path_len + filename_len] = '*';
-                buf[path_len + 1 + filename_len] = '\0';
-
-                io_delete_recursively(buf, path_len + filename_len);
+                io_delete_recursively(buf, path_len - 1 + filename_len);
+            } else {
+                io_delete(buf, path_len - 1 + filename_len);
             }
-            buf[path_len - 1 + filename_len] = '\0';
-            io_delete(buf, path_len + filename_len);
         }
     } while(FindNextFile(find_handler, &cur_file));
-    io_delete(dir_path, path_len);
+    io_delete(dir_path, path_len - 2);
    
     cassert_always(FindClose(find_handler));
 #else
@@ -295,7 +321,7 @@ io_foreach(const char* dir_path, size_t path_len, bool handler(const char* path,
         }
     } while(FindNextFile(find_handler, &cur_file));
    
-    FindClose(find_handler);
+    cassert(FindClose(find_handler));
 #else
     DIR *cur_dir;
     struct dirent *cur_dir_properties;
