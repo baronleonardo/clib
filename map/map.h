@@ -7,6 +7,13 @@
 
 typedef void* Map;
 
+/// @brief Every element of Map has shape of
+///        Element {
+///            bool is_filled,
+///            uint8_t key[max_key_size],
+///            uint8_t value[max_value_size],
+///        }
+
 Map
 map_create(size_t max_capacity, size_t max_key_size, size_t max_value_size);
 

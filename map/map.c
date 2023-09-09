@@ -10,7 +10,7 @@ map_create(size_t max_capacity, size_t max_key_size, size_t max_value_size) {
     cassert(max_key_size > 0);
     cassert(max_value_size > 0);
 
-    MapMeta* meta = (MapMeta*)calloc(1, sizeof(MapMeta) + (sizeof(Map) + max_key_size + max_value_size));
+    MapMeta* meta = (MapMeta*)calloc(1, sizeof(MapMeta) + (max_capacity * (max_key_size + max_value_size + sizeof(bool))));
     cassert(meta);
 
     meta->capacity = max_capacity;
@@ -61,8 +61,7 @@ map_get(const Map self, void* key, size_t key_size) {
 
     MapElement element = map_internal_search_and_get(self, key, key_size);
     if(element.key != NULL) {
-        MapMeta* meta = map_internal_get_meta(self);
-        return (uint8_t*)(element.key) + meta->max_key_size;
+        return (uint8_t*)(element.value);
     } else {
         return NULL;
     }
