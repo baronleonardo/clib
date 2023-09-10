@@ -24,7 +24,11 @@ io_file_open(const char* path, size_t path_len, const char mode[]) {
 
 #if defined(_WIN32)   // MSVC on windows
     FILE* opened_file = NULL;
-    cassert_always_perror(fopen_s(&opened_file, path, mode) == 0, path);
+    wchar_t* wide_path;
+    size_t wide_path_len = io_internal_path_u8_to_wide(path, path_len, &wide_path);
+
+    cassert_always_perror(_wfopen_s(&opened_file, wide_path, (wchar_t*)mode) == 0, path);
+    free(wide_path);
 #else
     FILE* opened_file = fopen(path, mode);
     cassert_always_perror(opened_file, path);
@@ -125,31 +129,10 @@ io_dir_empty(const char* dir_path, size_t path_len) {
     cassert_always(io_dir(dir_path, path_len));
 
 #if defined(_WIN32)
-    cassert_always(path_len < MAX_PATH);
+    bool is_empty = true;
+    io_foreach(dir_path, path_len, io_internal_dir_empty_handler, &is_empty);
 
-    WIN32_FIND_DATA cur_file;
-    HANDLE find_handler;
-    enum { buf_len = MAX_PATH };
-    char buf[buf_len];
-    int number_of_existing_paths = 0;
-
-    cassert(memcpy_s(buf, buf_len, dir_path, path_len) == 0);
-    buf[path_len] = '/';
-    buf[path_len + 1] = '*';
-    buf[path_len + 2] = '\0';
-    path_len += 2;
-
-    find_handler = FindFirstFile(buf, &cur_file);
-    do {
-        cassert_always(find_handler != INVALID_HANDLE_VALUE);
-
-        if(number_of_existing_paths > 2) break; // skip '.' and '..'
-        number_of_existing_paths++;
-    } while(FindNextFile(find_handler, &cur_file));
-   
-    cassert(FindClose(find_handler));
-
-    return ((number_of_existing_paths > 2) ? true : false);
+    return is_empty;
 #else
     cassert_always(path_len < PATH_MAX);
 
@@ -179,8 +162,8 @@ io_exists(const char* path, size_t path_len) {
 #if defined(_WIN32)
     cassert_always(path_len < MAX_PATH);
 
-    size_t ftyp = GetFileAttributesA(path);
-    if (ftyp == INVALID_FILE_ATTRIBUTES)
+    size_t path_attributes = GetFileAttributesA(path);
+    if (path_attributes == INVALID_FILE_ATTRIBUTES)
         return false;  //something is wrong with your path!
 
     return true;
@@ -219,39 +202,7 @@ io_delete_recursively(const char* dir_path, size_t path_len) {
     cassert_always(io_dir(dir_path, path_len));
 
 #if defined(_WIN32)
-    cassert_always(path_len < MAX_PATH);
-
-    WIN32_FIND_DATA cur_file;
-    HANDLE find_handler;
-    enum { buf_len = MAX_PATH };
-    char buf[buf_len];
-
-    cassert(memcpy_s(buf, buf_len, dir_path, path_len) == 0);
-    buf[path_len] = '/';
-    buf[path_len + 1] = '*';
-    buf[path_len + 2] = '\0';
-    path_len += 2;
-
-    find_handler = FindFirstFile(buf, &cur_file);
-    do {
-        cassert_always(find_handler != INVALID_HANDLE_VALUE);
-        size_t filename_len = strnlen_s(cur_file.cFileName, MAX_PATH);
-
-        // skip '.' and '..'
-        if((strncmp(cur_file.cFileName, ".", filename_len) != 0) && (strncmp(cur_file.cFileName, "..", filename_len) != 0)) {
-            cassert(memcpy_s(buf + path_len - 1, buf_len, cur_file.cFileName, filename_len) == 0);
-            buf[path_len - 1 + filename_len] = '\0';
-
-            if(cur_file.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) {
-                io_delete_recursively(buf, path_len - 1 + filename_len);
-            } else {
-                io_delete(buf, path_len - 1 + filename_len);
-            }
-        }
-    } while(FindNextFile(find_handler, &cur_file));
-    io_delete(dir_path, path_len - 2);
-   
-    cassert_always(FindClose(find_handler));
+    io_foreach(dir_path, path_len, io_internal_delete_recursively_handler, NULL);
 #else
     cassert_always(path_len < PATH_MAX);
 
@@ -288,7 +239,12 @@ io_delete_recursively(const char* dir_path, size_t path_len) {
 }
 
 void
-io_foreach(const char* dir_path, size_t path_len, bool handler(const char* path, size_t path_len)) {
+io_foreach(
+    const char* dir_path,
+    size_t path_len,
+    bool handler(const char* path, size_t path_len, void* extra_data),
+    void* extra_data
+) {
     cassert(dir_path);
     cassert(path_len > 0);
     cassert(handler);
@@ -296,33 +252,44 @@ io_foreach(const char* dir_path, size_t path_len, bool handler(const char* path,
     cassert_always(io_dir(dir_path, path_len));
 
 #if defined(_WIN32)
-    WIN32_FIND_DATA cur_file;
+    WIN32_FIND_DATAW cur_file;
     HANDLE find_handler;
-    enum { buf_len = MAX_PATH };
-    char buf[buf_len];
+    enum { buf_len = MAX_PATH * sizeof(wchar_t) };
+    wchar_t buf[buf_len];
 
-    cassert(memcpy_s(buf, buf_len, dir_path, path_len) == 0);
-    buf[path_len] = '/';
-    buf[path_len + 1] = '*';
-    buf[path_len + 2] = '\0';
-    path_len += 2;
+    wchar_t* wide_path = NULL;
+    size_t wide_path_len = io_internal_path_u8_to_wide(dir_path, path_len, &wide_path);
 
-    find_handler = FindFirstFile(buf, &cur_file);
+    cassert(memcpy_s(buf, buf_len, wide_path, wide_path_len * sizeof(wchar_t)) == 0);
+    buf[wide_path_len] = L'/';
+    buf[wide_path_len + 1] = L'*';
+    buf[wide_path_len + 2] = L'\0';
+    wide_path_len += 2;
+
+    find_handler = FindFirstFileW(buf, &cur_file);
     do {
         cassert_always(find_handler != INVALID_HANDLE_VALUE);
         // skip '.' and '..'
-        if((strncmp(cur_file.cFileName, ".", 1) != 0) && (strncmp(cur_file.cFileName, "..", 2) != 0)) {
-            size_t filename_len = strnlen_s(cur_file.cFileName, MAX_PATH);
-            cassert(memcpy_s(buf + path_len - 1, buf_len, cur_file.cFileName, filename_len) == 0);
-            buf[path_len - 1 + filename_len] = '\0';
+        if((wcscmp(cur_file.cFileName, L".") != 0) && (wcscmp(cur_file.cFileName, L"..") != 0)) {
+            size_t filename_len = wcsnlen(cur_file.cFileName, MAX_PATH);
+            cassert(memcpy_s(buf + wide_path_len - 1, buf_len, cur_file.cFileName, filename_len * sizeof(wchar_t)) == 0);
+            buf[wide_path_len - 1 + filename_len] = L'\0';
 
-            if(!handler(buf, path_len - 1 + filename_len)) {
+            char* u8path = NULL;
+            size_t u8path_len = io_internal_path_wide_to_u8(buf, wide_path_len - 1 + filename_len, &u8path);
+
+            bool handler_status = handler(u8path, u8path_len, extra_data);
+            free(u8path);
+
+            if(!handler_status) {
                 break;
             }
         }
-    } while(FindNextFile(find_handler, &cur_file));
+    } while(FindNextFileW(find_handler, &cur_file));
    
     cassert(FindClose(find_handler));
+
+    free(wide_path);
 #else
     DIR *cur_dir;
     struct dirent *cur_dir_properties;
