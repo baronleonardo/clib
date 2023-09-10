@@ -96,7 +96,13 @@ io_delete_recursively(const char* dir_path, size_t path_len);
 /// @param dir_path 
 /// @param path_len 
 /// @param handler 
+/// @param extra_data [optional] send/recieve extra data to the handler
 void
-io_foreach(const char* dir_path, size_t path_len, bool handler(const char* path, size_t path_len));
+io_foreach(
+    const char* dir_path,
+    size_t path_len,
+    bool handler(const char* path, size_t path_len, void* extra_data),
+    void* extra_data
+);
 
 #endif // IO_H
