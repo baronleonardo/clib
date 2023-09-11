@@ -17,13 +17,13 @@ io_internal_path_u8_to_wide(const char path[], size_t path_len, wchar_t** out_wi
     cassert(out_wide_path);
     cassert(path_len > 0);
 
-    size_t wide_path_len = MultiByteToWideChar(CP_UTF8, 0, path, path_len, NULL, 0);
+    size_t wide_path_len = MultiByteToWideChar(CP_UTF8, 0, path, (int)path_len, NULL, 0);
     cassert_always(wide_path_len);
 
     wchar_t* wide_path = (wchar_t*)malloc((wide_path_len + 1) * sizeof(wchar_t));
     cassert(wide_path);
 
-    wide_path_len = MultiByteToWideChar(CP_UTF8, 0, path, path_len, wide_path, wide_path_len * sizeof(wchar_t));
+    wide_path_len = MultiByteToWideChar(CP_UTF8, 0, path, (int)path_len, wide_path, (int)(wide_path_len * sizeof(wchar_t)));
     wide_path[wide_path_len] = '\0';
     
     *out_wide_path = wide_path;
@@ -36,13 +36,13 @@ io_internal_path_wide_to_u8(const wchar_t wide_path[], size_t wide_path_len, cha
     cassert(out_path);
     cassert(wide_path_len > 0);
 
-    size_t path_len = WideCharToMultiByte(CP_UTF8, 0, wide_path, wide_path_len, NULL, 0, NULL, NULL);
+    size_t path_len = WideCharToMultiByte(CP_UTF8, 0, wide_path, (int)wide_path_len, NULL, 0, NULL, NULL);
     cassert_always(path_len);
 
     char* path = (char*)malloc((path_len + 1) * sizeof(char));
     cassert(wide_path);
 
-    path_len = WideCharToMultiByte(CP_UTF8, 0, wide_path, wide_path_len, path, path_len, NULL, NULL);
+    path_len = WideCharToMultiByte(CP_UTF8, 0, wide_path, (int)wide_path_len, path, (int)path_len, NULL, NULL);
     path[path_len] = '\0';
     
     *out_path = path;
