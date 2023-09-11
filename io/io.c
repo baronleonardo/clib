@@ -25,7 +25,7 @@ io_file_open(const char* path, size_t path_len, const char mode[]) {
 #if defined(_WIN32)   // MSVC on windows
     FILE* opened_file = NULL;
     wchar_t* wide_path;
-    size_t wide_path_len = io_internal_path_u8_to_wide(path, path_len, &wide_path);
+    (void)io_internal_path_u8_to_wide(path, path_len, &wide_path);
 
     cassert_always_perror(_wfopen_s(&opened_file, wide_path, (wchar_t*)mode) == 0, path);
     free(wide_path);

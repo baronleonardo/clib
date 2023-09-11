@@ -66,6 +66,9 @@ io_internal_delete_recursively_handler(const char* path, size_t path_len, void* 
 
 bool
 io_internal_dir_empty_handler(const char* path, size_t path_len, void* extra_data) {
+    (void)path;
+    (void)path_len;
+
     *(bool*)extra_data = false; // This dir_path is not empty
     return false;
 }
