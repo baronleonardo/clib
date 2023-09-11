@@ -48,6 +48,7 @@ io_internal_path_wide_to_u8(const wchar_t wide_path[], size_t wide_path_len, cha
     *out_path = path;
     return path_len;
 }
+#endif // _WIN32
 
 bool
 io_internal_delete_recursively_handler(const char* path, size_t path_len, void* extra_data) {
@@ -68,6 +69,5 @@ io_internal_dir_empty_handler(const char* path, size_t path_len, void* extra_dat
     *(bool*)extra_data = false; // This dir_path is not empty
     return false;
 }
-#endif // _WIN32
 
 #endif // IO_INTERNAL_H

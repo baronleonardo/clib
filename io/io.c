@@ -129,28 +129,15 @@ io_dir_empty(const char* dir_path, size_t path_len) {
     cassert_always(io_dir(dir_path, path_len));
 
 #if defined(_WIN32)
+    cassert_always(path_len < MAX_PATH);
+#else
+    cassert_always(path_len < PATH_MAX);
+#endif
+
     bool is_empty = true;
     io_foreach(dir_path, path_len, io_internal_dir_empty_handler, &is_empty);
 
     return is_empty;
-#else
-    cassert_always(path_len < PATH_MAX);
-
-    int number_of_existing_paths = 0;
-    struct dirent *dir_attributes = {0};
-
-    DIR* dir = opendir(dir_path);
-    cassert_always_perror(dir, dir_path);
-
-    while ((dir_attributes = readdir(dir)) != NULL) {
-        if(number_of_existing_paths > 2) break;     // skip '.' and '..'
-        number_of_existing_paths++;
-    }
-
-    cassert_always(closedir(dir) == 0);
-
-    return ((number_of_existing_paths < 2) ? true : false);
-#endif
 }
 
 bool
@@ -202,40 +189,12 @@ io_delete_recursively(const char* dir_path, size_t path_len) {
     cassert_always(io_dir(dir_path, path_len));
 
 #if defined(_WIN32)
-    io_foreach(dir_path, path_len, io_internal_delete_recursively_handler, NULL);
+    cassert_always(path_len < MAX_PATH);
 #else
     cassert_always(path_len < PATH_MAX);
-
-    DIR *cur_dir;
-    struct dirent *cur_dir_properties;
-    enum { buf_len = PATH_MAX };
-    char buf[buf_len];
-
-    cassert(memcpy(buf, dir_path, path_len));
-
-    cur_dir = opendir(dir_path);
-    if (cur_dir) {
-        while ((cur_dir_properties = readdir(cur_dir)) != NULL) {
-            size_t filename_len = strnlen(cur_dir_properties->d_name, PATH_MAX);
-
-            // skip '.' and '..'
-            if((strncmp(cur_dir_properties->d_name, ".", filename_len) != 0) && (strncmp(cur_dir_properties->d_name, "..", filename_len) != 0)) {
-                buf[path_len] = '/';
-                cassert(memcpy(buf + path_len + 1, cur_dir_properties->d_name, filename_len));
-                buf[path_len + 1 + filename_len] = '\0';
-
-                if(io_dir(buf, path_len + 1 + filename_len)) {
-                    io_delete_recursively(buf, path_len + 1 + filename_len);
-                } else {
-                    io_delete(buf, path_len + 1 + filename_len);
-                }
-            }
-        }
-        io_delete(dir_path, path_len);
-
-        cassert_always(closedir(cur_dir) != -1);
-    }
 #endif
+
+    io_foreach(dir_path, path_len, io_internal_delete_recursively_handler, NULL);
 }
 
 void
@@ -301,13 +260,13 @@ io_foreach(
     cur_dir = opendir(dir_path);
     if (cur_dir) {
         while ((cur_dir_properties = readdir(cur_dir)) != NULL) {
-            if((strncmp(cur_dir_properties->d_name, ".", 1) != 0) && (strncmp(cur_dir_properties->d_name, "..", 2) != 0)) {
+            if((strcmp(cur_dir_properties->d_name, ".") != 0) && (strcmp(cur_dir_properties->d_name, "..") != 0)) {
                 size_t filename_len = strnlen(cur_dir_properties->d_name, PATH_MAX);
                 buf[path_len] = '/';
                 cassert(memcpy(buf + path_len + 1, cur_dir_properties->d_name, filename_len));
                 buf[path_len + 1 + filename_len] = '\0';
 
-                if(!handler(buf, path_len + filename_len)) {
+                if(!handler(buf, path_len + 1 + filename_len, extra_data)) {
                     break;
                 }
             }
