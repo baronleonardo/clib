@@ -261,7 +261,7 @@ io_foreach(
     if (cur_dir) {
         while ((cur_dir_properties = readdir(cur_dir)) != NULL) {
             if((strcmp(cur_dir_properties->d_name, ".") != 0) && (strcmp(cur_dir_properties->d_name, "..") != 0)) {
-                size_t filename_len = strnlen(cur_dir_properties->d_name, PATH_MAX);
+                size_t filename_len = strlen(cur_dir_properties->d_name);
                 buf[path_len] = '/';
                 cassert(memcpy(buf + path_len + 1, cur_dir_properties->d_name, filename_len));
                 buf[path_len + 1 + filename_len] = '\0';
