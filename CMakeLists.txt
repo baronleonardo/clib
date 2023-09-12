@@ -7,7 +7,7 @@ if (MSVC)
     add_compile_options(/W4)
 else()
     # additional warnings
-    add_compile_options(-Wall -Wpedantic -Wno-flexible-array-extensions)
+    add_compile_options(-Wall -Wpedantic -Werror)
 endif()
 
 option(BUILD_SHARED_LIBS "Build libraries as SHARED" OFF)   # static by default
@@ -22,3 +22,4 @@ add_subdirectory(io)
 add_subdirectory(log)
 add_subdirectory(map)
 add_subdirectory(str)
+add_subdirectory(ui)

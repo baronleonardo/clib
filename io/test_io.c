@@ -32,7 +32,7 @@ int main(void) {
     // test io_file_write
     f = io_file_open(STR(test_assets "/out-file.txt"), "w");
     const char* out = "بسم الله الرحمن الرحيم\n";
-    size_t out_len = strnlen(out, buf_len);
+    size_t out_len = strlen(out);
     assert(memcpy(buf, out, out_len));
     assert(io_file_write(f, buf, out_len));
     io_file_close(&f);
