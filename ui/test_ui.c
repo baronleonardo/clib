@@ -9,6 +9,9 @@
 
 void
 on_button_clicked_event(UiButton button, void* extra_data) {
+    (void)button;
+    (void)extra_data;
+
     puts("clicked");
 }
 

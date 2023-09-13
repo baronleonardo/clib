@@ -9,8 +9,6 @@ add_library(ui
     ui_internal.h
     ui.h
     ui.c
-    ui_internal_gtk.h
-    ui_internal_gtk.c
 )
 target_include_directories(ui PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 target_link_libraries(ui PUBLIC common)
@@ -21,6 +19,10 @@ if(NOT (gtk AND qt AND windows_ui AND mac_ui AND android_ui AND ios_ui))
     if(UNIX AND NOT APPLE)
         set(gtk ON)
         message("== Option: gtk ON")
+        target_sources(ui PRIVATE
+            ui_internal_gtk.h
+            ui_internal_gtk.c
+        )
     elseif(WIN32)
         set(windows_ui ON)
         message("== Option: windows_ui ON")
