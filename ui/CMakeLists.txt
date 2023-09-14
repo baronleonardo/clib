@@ -26,6 +26,10 @@ if(NOT (gtk AND qt AND windows_ui AND mac_ui AND android_ui AND ios_ui))
     elseif(WIN32)
         set(windows_ui ON)
         message("== Option: windows_ui ON")
+        target_sources(ui PRIVATE
+            ui_internal_win.h
+            ui_internal_win.c
+        )
     elseif(APPLE)
         set(mac_ui ON)
         message("== Option: mac_ui ON")
