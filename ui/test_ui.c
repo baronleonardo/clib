@@ -1,4 +1,5 @@
 #include <ui.h>
+#include <ui_button.h>
 
 #undef NDEBUG
 #include <assert.h>
@@ -7,20 +8,20 @@
 
 #define STR(str) (str), (sizeof((str)) - 1)
 
-// void
-// on_button_clicked_event(UiButton button, void* extra_data) {
-//     (void)button;
-//     (void)extra_data;
+void
+on_button_clicked_event(UiButton button, void* extra_data) {
+    (void)button;
+    (void)extra_data;
 
-//     puts("clicked");
-// }
+    puts("clicked");
+}
 
 void
 on_activate_handler(Ui self) {
     puts("Hello there");
-    // UiButton* button = ui_button_create(self, STR("button"));
-    // ui_button_event_clicked(button, on_button_clicked_event, NULL);
-    // ui_child_add(self, button);
+    UiButton* button = ui_button_create(self, STR("button"));
+    ui_button_event_clicked(button, on_button_clicked_event, NULL);
+    ui_child_add(self, button);
 }
 
 int main() {

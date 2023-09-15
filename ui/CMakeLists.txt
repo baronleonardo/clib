@@ -23,6 +23,8 @@ if(NOT (gtk AND qt AND windows_ui AND mac_ui AND android_ui AND ios_ui))
         target_sources(ui PRIVATE
             ui_internal_gtk/ui_internal_gtk.h
             ui_internal_gtk/ui_internal_gtk.c
+            ui_internal_gtk/ui_internal_gtk_button.c
+            ui_internal_gtk/ui_internal_gtk_button.h
         )
     elseif(WIN32)
         set(windows_ui ON)
@@ -30,6 +32,8 @@ if(NOT (gtk AND qt AND windows_ui AND mac_ui AND android_ui AND ios_ui))
         target_sources(ui PRIVATE
             ui_internal_win/ui_internal_win.h
             ui_internal_win/ui_internal_win.c
+            ui_internal_win/ui_internal_win_button.h
+            ui_internal_win/ui_internal_win_button.c
         )
     elseif(APPLE)
         set(mac_ui ON)
