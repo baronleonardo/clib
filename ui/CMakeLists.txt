@@ -6,9 +6,10 @@ option(android_ui "enable android ui backend" OFF)
 option(ios_ui "enable ios ui backend" OFF)
 
 add_library(ui
-    ui_internal.h
     ui.h
     ui.c
+    ui_button.h
+    ui_button.c
 )
 target_include_directories(ui PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 target_link_libraries(ui PUBLIC common)
@@ -20,12 +21,16 @@ if(NOT (gtk AND qt AND windows_ui AND mac_ui AND android_ui AND ios_ui))
         set(gtk ON)
         message("== Option: gtk ON")
         target_sources(ui PRIVATE
-            ui_internal_gtk.h
-            ui_internal_gtk.c
+            ui_internal_gtk/ui_internal_gtk.h
+            ui_internal_gtk/ui_internal_gtk.c
         )
     elseif(WIN32)
         set(windows_ui ON)
         message("== Option: windows_ui ON")
+        target_sources(ui PRIVATE
+            ui_internal_win/ui_internal_win.h
+            ui_internal_win/ui_internal_win.c
+        )
     elseif(APPLE)
         set(mac_ui ON)
         message("== Option: mac_ui ON")
@@ -62,7 +67,7 @@ endif()
 # install
 set_target_properties(ui
     PROPERTIES
-    PUBLIC_HEADER ui.h
+    PUBLIC_HEADER "ui.h;ui_button.h"
 )
 install(TARGETS ui)
 
@@ -71,6 +76,5 @@ install(TARGETS ui)
 if(test)
     add_executable(test_ui test_ui.c)
     target_link_libraries(test_ui ui)
-    target_compile_definitions(test_ui PUBLIC test_assets="${CMAKE_CURRENT_SOURCE_DIR}/test_assets")
     add_test(NAME test_ui COMMAND test_ui)
 endif()
