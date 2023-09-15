@@ -1,4 +1,4 @@
-#include <ui_internal_gtk.h>
+#include "ui_internal_gtk.h"
 #include <cassert.h>
 
 typedef struct {
@@ -53,12 +53,7 @@ ui_internal_gtk_button_event_clicked(
 }
 
 void
-ui_internal_gtk_mainloop(
-    UiBackend self,
-    char* argv[],
-    int argc,
-    void on_activate_handler(UiBackend self)
-){
+ui_internal_gtk_mainloop(UiBackend self, void on_activate_handler(UiBackend self)){
     UiActivationCallBackExtraData extra_data = {
         .backend_ui = self,
         .on_activate_handler = on_activate_handler
@@ -67,7 +62,7 @@ ui_internal_gtk_mainloop(
     g_signal_connect (self->backend, "activate", G_CALLBACK(ui_internal_gtk_on_activate_handler), &extra_data);
 
     extra_data.backend_ui->is_activated = true;
-    cassert(g_application_run(G_APPLICATION(self->backend), argc, argv) == 0);
+    cassert(g_application_run(G_APPLICATION(self->backend), 0, NULL) == 0);
 }
 
 void
