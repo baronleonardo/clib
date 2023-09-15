@@ -6,7 +6,6 @@
 
 typedef struct UiBackend* Ui;
 typedef void* UiWidget;
-typedef void* UiButton;
 
 
 Ui
@@ -17,20 +16,8 @@ void
 ui_child_add(Ui self, UiWidget widget);
 
 
-UiButton
-ui_button_create(
-    Ui self,
-    const char* label,
-    size_t label_len
-);
-
-
 void
-ui_button_event_clicked(UiButton button, void on_click_event(UiButton button, void* extra_data), void* extra_data);
-
-
-void
-ui_mainloop(Ui self, char* argv[], int argc, void on_activate_handler(Ui self));
+ui_mainloop(Ui self, void on_activate_handler(Ui self));
 
 
 void
