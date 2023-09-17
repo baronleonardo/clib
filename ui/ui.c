@@ -4,14 +4,46 @@
 #include <cassert.h>
 
 #ifdef gtk
-#include <ui_internal_gtk/ui_internal_gtk.h>
+#include <gtk/gtk.h>
+
+struct UiBackend {
+    bool is_activated;
+    const char* title;
+    size_t title_len;
+    GtkApplication* backend;
+};
+typedef struct UiBackend* UiBackend;
+// typedef GtkButton UiBackendButton;
+// typedef GtkChild UiBackendChild;
+
+typedef struct {
+    void (*construction_handler)(UiBackend self);
+    UiBackend backend;    
+} UiActivationCallBackExtraData;
+
+static void
+ui_internal_gtk_on_activate_handler(GtkApplication* self, void* extra_data);
+
 
 Ui
 ui_create(const char* class_name, size_t class_name_len) {
-    cassert(title);
-    cassert(title_len > 0);
+    // cassert(class_name);
+    // cassert(class_name_len > 0);
+    cassert_always(!class_name || g_application_id_is_valid(class_name));
 
-    return ui_internal_gtk_create(title, title_len);
+    GtkApplication* gtk_app = gtk_application_new(class_name, G_APPLICATION_FLAGS_NONE);
+    cassert_always(gtk_app);
+
+    UiBackend app = malloc(sizeof(struct UiBackend));
+    cassert(app);
+    app->is_activated = false;
+    app->title = "title";
+    app->title_len = sizeof("title") - 1;
+    app->backend = gtk_app;
+    // app->title = title;
+    // app->title_len = title_len;
+
+    return app;
 }
 
 void
@@ -19,21 +51,46 @@ ui_child_add(Ui self, UiChild child) {
     cassert(self);
     cassert(child);
 
-    ui_internal_gtk_child_add(self, child);
+    GtkWindow* current_window = gtk_application_get_active_window(self->backend);
+    gtk_container_add(GTK_CONTAINER(current_window), child);
 }
 
 void
-ui_mainloop(Ui self, void on_activate_handler(Ui self)) {
-    ui_internal_gtk_mainloop(self, on_activate_handler);
+ui_mainloop(Ui self, void construction_handler(Ui self)) {
+    cassert(self);
+    cassert(construction_handler);
+
+    UiActivationCallBackExtraData extra_data = {
+        .backend = self,
+        .construction_handler = construction_handler
+    };
+
+    g_signal_connect (self->backend, "activate", G_CALLBACK(ui_internal_gtk_on_activate_handler), &extra_data);
+
+    self->is_activated = true;
+    cassert(g_application_run(G_APPLICATION(self->backend), 0, NULL) == 0);
 }
 
 void
 ui_destroy(Ui* self) {
     cassert(self && *self);
 
-    ui_internal_gtk_destroy(self);
+    g_object_unref((*self)->backend);
+    free(*self);
+    *self = NULL;
 }
 
+void
+ui_internal_gtk_on_activate_handler(GtkApplication* self, void* extra_data) {
+    UiBackend backend = ((UiActivationCallBackExtraData*)extra_data)->backend;
+
+    // create a window
+    // GtkWindow* gtk_window = GTK_WINDOW(gtk_application_window_new(self));
+    // cassert_always(gtk_window);
+    // gtk_window_set_title(GTK_WINDOW(gtk_window), backend->title);
+
+    ((UiActivationCallBackExtraData*)extra_data)->construction_handler(backend);
+}
 #endif // gtk
 
 #ifdef windows_ui

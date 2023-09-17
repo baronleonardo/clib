@@ -17,7 +17,7 @@ ui_child_add(Ui self, UiChild child);
 
 
 void
-ui_mainloop(Ui self);
+ui_mainloop(Ui self, void construction_handler(Ui self));
 
 
 void
