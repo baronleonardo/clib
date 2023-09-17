@@ -5,20 +5,12 @@
 
 #ifdef gtk
 #include <gtk/gtk.h>
-
-struct UiBackend {
-    bool is_activated;
-    const char* title;
-    size_t title_len;
-    GtkApplication* backend;
-};
-typedef struct UiBackend* UiBackend;
 // typedef GtkButton UiBackendButton;
 // typedef GtkChild UiBackendChild;
 
 typedef struct {
-    void (*construction_handler)(UiBackend self);
-    UiBackend backend;    
+    void (*construction_handler)(UiBackend* self);
+    UiBackend* backend;
 } UiActivationCallBackExtraData;
 
 static void
@@ -34,7 +26,7 @@ ui_create(const char* class_name, size_t class_name_len) {
     GtkApplication* gtk_app = gtk_application_new(class_name, G_APPLICATION_FLAGS_NONE);
     cassert_always(gtk_app);
 
-    UiBackend app = malloc(sizeof(struct UiBackend));
+    UiBackend* app = (UiBackend*)malloc(sizeof(struct UiBackend));
     cassert(app);
     app->is_activated = false;
     app->title = "title";
@@ -82,7 +74,7 @@ ui_destroy(Ui* self) {
 
 void
 ui_internal_gtk_on_activate_handler(GtkApplication* self, void* extra_data) {
-    UiBackend backend = ((UiActivationCallBackExtraData*)extra_data)->backend;
+    UiBackend* backend = ((UiActivationCallBackExtraData*)extra_data)->backend;
 
     // create a window
     // GtkWindow* gtk_window = GTK_WINDOW(gtk_application_window_new(self));
