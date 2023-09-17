@@ -33,7 +33,8 @@ on_activate_handler(Ui self) {
 int main() {
     // if you register class if you are using vscode on flatpak,
     // it will crash as vscode doesn't have a permission to register to dbus
-    Ui ui = ui_create(NULL, 0);
+    // Ui ui = ui_create(NULL, 0);
+    Ui ui = ui_create(STR("com.windows.ui"));
     // UIWindow* window = ui_window_add(ui, STR("This is a title"), 800, 600);
     // (void)window;
 

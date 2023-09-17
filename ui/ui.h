@@ -4,6 +4,12 @@
 #include <stddef.h>
 #include <stdbool.h>
 
+typedef struct UiBackend {
+    bool is_activated;
+    const char* title;
+    size_t title_len;
+    void* backend;
+} UiBackend;
 typedef struct UiBackend* Ui;
 typedef void* UiChild;
 

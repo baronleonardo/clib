@@ -4,13 +4,6 @@
 #ifdef gtk
 #include <gtk/gtk.h>
 
-struct UiBackend {
-    bool is_activated;
-    const char* title;
-    size_t title_len;
-    GtkApplication* backend;
-};
-typedef struct UiBackend* UiBackend;
 // typedef GtkButton UiBackendButton;
 // typedef GtkChild UiBackendChild;
 
@@ -49,15 +42,17 @@ ui_window_visiable(UIWindow window, bool visiable) {
 
 
 #ifdef windows_ui
+#include <windows.h>
+
 UIWindow
-ui_window_add(UiBackend self, const char* title, size_t title_len, size_t width, size_t height) {
+ui_window_add(Ui self, const char* title, size_t title_len, size_t width, size_t height) {
     cassert(self);
     cassert(title);
     cassert(title_len > 0);
     cassert(title[title_len] == '\0');
 
     HWND window = CreateWindowA(
-        self->backend.lpszClassName,
+        ((WNDCLASSEX*)self->backend)->lpszClassName,
         title,
         WS_OVERLAPPEDWINDOW | WS_VISIBLE,
         CW_USEDEFAULT,
@@ -66,7 +61,7 @@ ui_window_add(UiBackend self, const char* title, size_t title_len, size_t width,
         height,
         NULL,
         NULL,
-        self->backend.hInstance,
+        ((WNDCLASSEX*)self->backend)->hInstance,
         self
     );
     cassert_always(window);
@@ -85,6 +80,17 @@ ui_window_add(UiBackend self, const char* title, size_t title_len, size_t width,
 void
 ui_window_visiable(UIWindow window, bool visiable) {
     cassert(window);
+    
+    if(visiable) {
+        // STARTUPINFO startup_info;
+        // /// Specifies the window station, desktop, standard handles, and appearance of the main window for a process at creation time.
+        // GetStartupInfo(&startup_info);  
+        // int nCmdShow = startup_info.wShowWindow;
+
+        cassert_always(ShowWindow((HWND)window, SW_SHOW));
+    } else {
+        cassert_always(ShowWindow((HWND)window, SW_HIDE));
+    }
 
     // STARTUPINFO startup_info;
     // /// Specifies the window station, desktop, standard handles, and appearance of the main window for a process at creation time.

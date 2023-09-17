@@ -102,15 +102,6 @@ ui_internal_gtk_on_activate_handler(GtkApplication* self, void* extra_data) {
 
 #include <cassert.h>
 
-typedef struct UiBackend {
-    bool is_activated;
-    const char* title;
-    size_t title_len;
-    WNDCLASSEX backend;
-    void (*on_activate_handler)(struct UiBackend*);
-} UiBackend;
-typedef void* UiChild;
-
 typedef struct {
     void (*on_activate_handler)(Ui self);
     UiBackend* backend;
@@ -129,27 +120,32 @@ static LRESULT __stdcall ui_internal_win_event_handler (
 
 Ui
 ui_create(const char* class_name, size_t class_name_len) {
-    (void)class_name_len;
+    cassert(class_name);
+    cassert(class_name_len > 0);
 
     UiBackend* app = (UiBackend*)calloc(1, sizeof(struct UiBackend));
     cassert(app);
+
+    WNDCLASSEX* backend = (WNDCLASSEX*)calloc(1, sizeof(WNDCLASSEX));
+    cassert(backend);
     
     /// TODO: this should be a unique class name
     ///       pass it as a parameter
-    app->backend.lpszClassName = class_name;
-    app->backend.lpfnWndProc = &ui_internal_win_event_handler;
-    app->backend.cbSize = sizeof(WNDCLASSEX);
-    // app->backend.style  = 0;
-    // app->backend.cbClsExtra = 0;
-    // app->backend.cbWndExtra = 0;
-    app->backend.hInstance = GetModuleHandle(NULL);
-    // app->backend.hIcon = LoadIcon(NULL, IDI_APPLICATION);
-    app->backend.hCursor = LoadCursor(NULL, IDC_ARROW);
-    app->backend.hbrBackground = GetSysColorBrush(COLOR_WINDOW);
-    // app->backend.lpszMenuName = NULL;	
-    // app->backend.hIconSm = LoadIcon(NULL, IDI_APPLICATION);
+    backend->lpszClassName = class_name;
+    backend->lpfnWndProc = &ui_internal_win_event_handler;
+    backend->cbSize = sizeof(WNDCLASSEX);
+    // backend->style  = 0;
+    // backend->cbClsExtra = 0;
+    // backend->cbWndExtra = 0;
+    backend->hInstance = GetModuleHandle(NULL);
+    // backend->hIcon = LoadIcon(NULL, IDI_APPLICATION);
+    backend->hCursor = LoadCursor(NULL, IDC_ARROW);
+    backend->hbrBackground = GetSysColorBrush(COLOR_WINDOW);
+    // backend->lpszMenuName = NULL;	
+    // backend->hIconSm = LoadIcon(NULL, IDI_APPLICATION);
 
-    cassert_always(RegisterClassEx(&app->backend));
+    app->backend = backend;
+    cassert_always(RegisterClassEx(app->backend));
 
     return app;
 }
@@ -160,7 +156,7 @@ ui_child_add(Ui self, UiChild child) {
 }
 
 void
-ui_mainloop(Ui self) {
+ui_mainloop(Ui self, void construction_handler(Ui self)) {
     // STARTUPINFO startup_info;
     // /// Specifies the window station, desktop, standard handles, and appearance of the main window for a process at creation time.
     // GetStartupInfo(&startup_info);  
@@ -169,6 +165,7 @@ ui_mainloop(Ui self) {
     self->is_activated = true;
     // self->on_activate_handler = on_activate_handler;
     // self->on_activate_handler(self);
+    construction_handler(self);
 
     // HWND window = CreateWindowA(
     //     self->backend.lpszClassName,
@@ -200,6 +197,7 @@ void
 ui_destroy(Ui* self) {
     cassert(self && *self);
 
+    free((*self)->backend);
     free(*self);
     *self = NULL;
 }
