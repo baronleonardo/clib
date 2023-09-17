@@ -13,7 +13,7 @@ struct UiBackend {
 };
 typedef struct UiBackend* UiBackend;
 typedef GtkButton UiBackendButton;
-typedef GtkWidget UiBackendWidget;
+typedef GtkChild UiBackendChild;
 
 
 UiBackend
@@ -21,7 +21,7 @@ ui_internal_gtk_create(const char* title, size_t title_len);
 
 
 void
-ui_internal_gtk_child_add(UiBackend self, UiBackendWidget* widget);
+ui_internal_gtk_child_add(UiBackend self, UiBackendChild* child);
 
 
 void

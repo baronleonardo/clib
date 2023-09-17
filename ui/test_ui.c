@@ -1,5 +1,6 @@
 #include <ui.h>
-#include <ui_button.h>
+#include <ui_window.h>
+// #include <ui_button.h>
 
 #undef NDEBUG
 #include <assert.h>
@@ -8,25 +9,31 @@
 
 #define STR(str) (str), (sizeof((str)) - 1)
 
-void
-on_button_clicked_event(UiButton button, void* extra_data) {
-    (void)button;
-    (void)extra_data;
+// void
+// on_button_clicked_event(UiButton button, void* extra_data) {
+//     (void)button;
+//     (void)extra_data;
 
-    puts("clicked");
-}
+//     puts("clicked");
+// }
 
-void
-on_activate_handler(Ui self) {
-    puts("Hello there");
-    UiButton* button = ui_button_create(self, STR("button"));
-    ui_button_event_clicked(button, on_button_clicked_event, NULL);
-    ui_child_add(self, button);
-}
+// void
+// on_activate_handler(Ui self) {
+//     puts("Hello there");
+//     UIWindow* window = ui_window_add(self, STR("This is a title"), 800, 600);
+//     ui_window_visiable(window, true);
+//     // ui_child_add(self, window);
+
+//     // UiButton* button = ui_button_create(self, STR("button"));
+//     // ui_button_event_clicked(button, on_button_clicked_event, NULL);
+//     // ui_child_add(self, button);
+// }
 
 int main() {
-    Ui ui = ui_create(STR("This is a title"));
-    ui_mainloop(ui, on_activate_handler);
+    Ui ui = ui_create(STR("com.windows.ui"));
+    UIWindow* window = ui_window_add(ui, STR("This is a title"), 800, 600);
+
+    ui_mainloop(ui);
     ui_destroy(&ui);
 }
 

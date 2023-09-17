@@ -5,19 +5,19 @@
 #include <stdbool.h>
 
 typedef struct UiBackend* Ui;
-typedef void* UiWidget;
+typedef void* UiChild;
 
 
 Ui
-ui_create(const char* title, size_t title_len);
+ui_create(const char* class_name, size_t class_name_len);
 
 
 void
-ui_child_add(Ui self, UiWidget widget);
+ui_child_add(Ui self, UiChild child);
 
 
 void
-ui_mainloop(Ui self, void on_activate_handler(Ui self));
+ui_mainloop(Ui self);
 
 
 void

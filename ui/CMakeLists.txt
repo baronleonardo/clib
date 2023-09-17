@@ -8,8 +8,10 @@ option(ios_ui "enable ios ui backend" OFF)
 add_library(ui
     ui.h
     ui.c
-    ui_button.h
-    ui_button.c
+    ui_window.h
+    ui_window.c
+    # ui_button.h
+    # ui_button.c
 )
 target_include_directories(ui PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 target_link_libraries(ui PUBLIC common)
@@ -20,21 +22,9 @@ if(NOT (gtk AND qt AND windows_ui AND mac_ui AND android_ui AND ios_ui))
     if(UNIX AND NOT APPLE)
         set(gtk ON)
         message("== Option: gtk ON")
-        target_sources(ui PRIVATE
-            ui_internal_gtk/ui_internal_gtk.h
-            ui_internal_gtk/ui_internal_gtk.c
-            ui_internal_gtk/ui_internal_gtk_button.c
-            ui_internal_gtk/ui_internal_gtk_button.h
-        )
     elseif(WIN32)
         set(windows_ui ON)
         message("== Option: windows_ui ON")
-        target_sources(ui PRIVATE
-            ui_internal_win/ui_internal_win.h
-            ui_internal_win/ui_internal_win.c
-            ui_internal_win/ui_internal_win_button.h
-            ui_internal_win/ui_internal_win_button.c
-        )
     elseif(APPLE)
         set(mac_ui ON)
         message("== Option: mac_ui ON")
