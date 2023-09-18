@@ -1,5 +1,6 @@
 #include <cassert.h>
 #include <ui_window.h>
+#include <ui_internal.h>
 
 #ifdef gtk
 #include <gtk/gtk.h>
@@ -13,6 +14,7 @@ ui_window_add(Ui self, const char* title, size_t title_len, size_t width, size_t
     cassert(title_len > 0);
     cassert(width > 0);
     cassert(height > 0);
+    cassert_always_msg(self->is_activated, ERROR_MSG_NOT_ACTIVATED("ui_window_add"));
 
     // create a window
     GtkWindow* gtk_window = GTK_WINDOW(gtk_application_window_new(self->backend));
@@ -27,7 +29,11 @@ ui_window_add(Ui self, const char* title, size_t title_len, size_t width, size_t
 
 void
 ui_window_visiable(UIWindow window, bool visiable) {
-    gtk_widget_show_all(GTK_WIDGET(window));
+    if(visiable) {
+        gtk_widget_hide(GTK_WIDGET(window));
+    } else {
+        gtk_widget_show_all(GTK_WIDGET(window));
+    }
 }
 #endif // gtk
 
@@ -41,6 +47,7 @@ ui_window_add(Ui self, const char* title, size_t title_len, size_t width, size_t
     cassert(title);
     cassert(title_len > 0);
     cassert(title[title_len] == '\0');
+    cassert_always_msg(self->is_activated, ERROR_MSG_NOT_ACTIVATED("ui_window_add"));
 
     HWND window = CreateWindowA(
         ((WNDCLASSEX*)self->backend)->lpszClassName,
