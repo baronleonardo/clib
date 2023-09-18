@@ -32,8 +32,6 @@ ui_create(const char* class_name, size_t class_name_len) {
     app->title = "title";
     app->title_len = sizeof("title") - 1;
     app->backend = gtk_app;
-    // app->title = title;
-    // app->title_len = title_len;
 
     return app;
 }

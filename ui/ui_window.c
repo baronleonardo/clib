@@ -18,16 +18,7 @@ ui_window_add(Ui self, const char* title, size_t title_len, size_t width, size_t
     GtkWindow* gtk_window = GTK_WINDOW(gtk_application_window_new(self->backend));
     cassert_always(gtk_window);
     gtk_window_set_title(GTK_WINDOW(gtk_window), title);
-
     gtk_window_set_default_size (GTK_WINDOW(gtk_window), 800, 600);
-
-    // ((UiActivationCallBackExtraData*)extra_data)->on_activate_handler(backend);
-    // cassert(gtk_window_activate_default(gtk_window));
-
-    // UiActivationCallBackExtraData extra_data = {
-    //     .backend = self,
-    //     .on_activate_handler = on_activate_handler
-    // };
 
     gtk_widget_show_all(GTK_WIDGET(gtk_window));
 
@@ -91,13 +82,5 @@ ui_window_visiable(UIWindow window, bool visiable) {
     } else {
         cassert_always(ShowWindow((HWND)window, SW_HIDE));
     }
-
-    // STARTUPINFO startup_info;
-    // /// Specifies the window station, desktop, standard handles, and appearance of the main window for a process at creation time.
-    // GetStartupInfo(&startup_info);  
-    // int nCmdShow = startup_info.wShowWindow;
-
-    // cassert_always(ShowWindow(window, nCmdShow));
-    // cassert_always(UpdateWindow(window));
 }
 #endif // windows_ui
