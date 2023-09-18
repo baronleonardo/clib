@@ -8,6 +8,7 @@ option(ios_ui "enable ios ui backend" OFF)
 add_library(ui
     ui.h
     ui.c
+    ui_internal.h
     ui_window.h
     ui_window.c
     # ui_button.h
