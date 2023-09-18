@@ -110,7 +110,7 @@ io_dir(const char* dir_path, size_t path_len) {
 #if defined(_WIN32)
     cassert_always(path_len < MAX_PATH);
 
-    size_t path_attributes = GetFile*Attributes(dir_path);
+    size_t path_attributes = GetFileAttributes(dir_path);
     return (path_attributes != INVALID_FILE_ATTRIBUTES && 
             (path_attributes & FILE_ATTRIBUTE_DIRECTORY));
 #else
@@ -149,7 +149,7 @@ io_exists(const char* path, size_t path_len) {
 #if defined(_WIN32)
     cassert_always(path_len < MAX_PATH);
 
-    size_t path_attributes = GetFile*AttributesA(path);
+    size_t path_attributes = GetFileAttributesA(path);
     if (path_attributes == INVALID_FILE_ATTRIBUTES)
         return false;  //something is wrong with your path!
 
@@ -169,7 +169,7 @@ io_delete(const char* path, size_t path_len) {
 
 #if defined(_WIN32)
     cassert_always(path_len < MAX_PATH);
-    size_t dwAttrib = GetFile*Attributes(path);
+    size_t dwAttrib = GetFileAttributes(path);
 
     if(dwAttrib & FILE_ATTRIBUTE_DIRECTORY) {
         cassert_always(RemoveDirectoryA(path));
@@ -225,13 +225,13 @@ io_foreach(
     buf[wide_path_len + 2] = L'\0';
     wide_path_len += 2;
 
-    find_handler = FindFirstFile*W(buf, &cur_file);
+    find_handler = FindFirstFileW(buf, &cur_file);
     do {
         cassert_always(find_handler != INVALID_HANDLE_VALUE);
         // skip '.' and '..'
-        if((wcscmp(cur_file.cFile*Name, L".") != 0) && (wcscmp(cur_file.cFile*Name, L"..") != 0)) {
-            size_t filename_len = wcsnlen(cur_file.cFile*Name, MAX_PATH);
-            cassert(memcpy_s(buf + wide_path_len - 1, buf_len, cur_file.cFile*Name, filename_len * sizeof(wchar_t)) == 0);
+        if((wcscmp(cur_file.cFileName, L".") != 0) && (wcscmp(cur_file.cFileName, L"..") != 0)) {
+            size_t filename_len = wcsnlen(cur_file.cFileName, MAX_PATH);
+            cassert(memcpy_s(buf + wide_path_len - 1, buf_len, cur_file.cFileName, filename_len * sizeof(wchar_t)) == 0);
             buf[wide_path_len - 1 + filename_len] = L'\0';
 
             char* u8path = NULL;
@@ -244,7 +244,7 @@ io_foreach(
                 break;
             }
         }
-    } while(FindNextFile*W(find_handler, &cur_file));
+    } while(FindNextFileW(find_handler, &cur_file));
    
     cassert(FindClose(find_handler));
 
