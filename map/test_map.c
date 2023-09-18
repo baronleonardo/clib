@@ -8,7 +8,7 @@
 #define INT_W_LEN(i) &(int){i}, sizeof(int)
 
 int main(void) {
-    Map map = map_create(100, 11, sizeof(int));
+    Map* map = map_create(100, 11, sizeof(int));
 
     assert(map_insert(&map, STR_W_LEN("abc"), INT_W_LEN(1)));
     assert(map_insert(&map, STR_W_LEN("ahmed here"), INT_W_LEN(2)));

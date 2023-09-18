@@ -4,9 +4,9 @@
 #ifdef gtk
 #include <ui_internal_gtk/ui_internal_gtk_button.h>
 
-UiButton
+UiButton*
 ui_button_create(
-    Ui self,
+    Ui* self,
     const char* label,
     size_t label_len
 ) {
@@ -18,7 +18,7 @@ ui_button_create(
 }
 
 void
-ui_button_event_clicked(UiButton button, void on_click_event(UiButton button, void* extra_data), void* extra_data) {
+ui_button_event_clicked(UiButton* button, void on_click_event(UiButton* button, void* extra_data), void* extra_data) {
     ui_internal_gtk_button_event_clicked(button, (void (*)(UiBackendButton*, void*))on_click_event, extra_data);
 }
 #endif // gtk
@@ -27,9 +27,9 @@ ui_button_event_clicked(UiButton button, void on_click_event(UiButton button, vo
 #ifdef windows_ui
 #include <ui_internal_win/ui_internal_win_button.h>
 
-UiButton
+UiButton*
 ui_button_create(
-    Ui self,
+    Ui* self,
     const char* label,
     size_t label_len
 ) {
@@ -41,7 +41,7 @@ ui_button_create(
 }
 
 void
-ui_button_event_clicked(UiButton button, void on_click_event(UiButton button, void* extra_data), void* extra_data) {
+ui_button_event_clicked(UiButton* button, void on_click_event(UiButton* button, void* extra_data), void* extra_data) {
     ui_internal_win_button_event_clicked(button, (void (*)(UiBackendButton*, void*))on_click_event, extra_data);
 }
 #endif // windows_ui

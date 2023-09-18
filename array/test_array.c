@@ -5,7 +5,7 @@
 #include <assert.h>
 
 int main(void) {
-    Array array = array_create(sizeof(int));
+    Array* array = array_create(sizeof(int));
 
     // test_push
     array_push(&array, &(int){12});

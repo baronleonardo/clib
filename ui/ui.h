@@ -4,29 +4,28 @@
 #include <stddef.h>
 #include <stdbool.h>
 
-typedef struct UiBackend {
+typedef struct Ui {
     bool is_activated;
     const char* title;
     size_t title_len;
     void* backend;
-} UiBackend;
-typedef struct UiBackend* Ui;
+} Ui;
 typedef void* UiChild;
 
 
-Ui
+Ui*
 ui_create(const char* class_name, size_t class_name_len);
 
 
 void
-ui_child_add(Ui self, UiChild child);
+ui_child_add(Ui* self, UiChild child);
 
 
 void
-ui_mainloop(Ui self, void construction_handler(Ui self));
+ui_mainloop(Ui* self, void construction_handler(Ui* self));
 
 
 void
-ui_destroy(Ui* self);
+ui_destroy(Ui** self);
 
 #endif // UI_H

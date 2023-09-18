@@ -5,7 +5,7 @@
 #include <string.h>
 
 int main(void) {
-    Str str = str_create("Ahmed is here", 100);
+    Str* str = str_create("Ahmed is here", 100);
 
     assert(str_remove(str, "here", 100));
     assert(strcmp(str, "Ahmed is ") == 0);

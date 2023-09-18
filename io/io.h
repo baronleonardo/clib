@@ -4,14 +4,14 @@
 #include <stdio.h>
 #include <stdbool.h>
 
-typedef FILE* File;
+typedef FILE File;
 
 /// @brief open/create a file
 /// @param path 
 /// @param path_len 
 /// @param mode this is the same as mode in `fopen`
 /// @return 
-File
+File*
 io_file_open(const char* path, size_t path_len, const char mode[]);
 
 
@@ -19,7 +19,7 @@ io_file_open(const char* path, size_t path_len, const char mode[]);
 /// @param self 
 /// @return 
 size_t
-io_file_size(File self);
+io_file_size(File* self);
 
 
 /// @brief read file content
@@ -28,7 +28,7 @@ io_file_size(File self);
 /// @param buf_size 
 /// @return return the bytes read
 size_t
-io_file_read(File self, char buf[], size_t buf_size);
+io_file_read(File* self, char buf[], size_t buf_size);
 
 
 /// @brief write to file
@@ -37,13 +37,13 @@ io_file_read(File self, char buf[], size_t buf_size);
 /// @param buf_size 
 /// @return return the bytes written
 size_t
-io_file_write(File self, char buf[], size_t buf_size);
+io_file_write(File* self, char buf[], size_t buf_size);
 
 
 /// @brief close an alreay opend file
 /// @param self 
 void
-io_file_close(File* self);
+io_file_close(File** self);
 
 
 /// @brief create a directory

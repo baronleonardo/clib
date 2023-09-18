@@ -8,8 +8,8 @@
 // typedef GtkButton UiBackendButton;
 // typedef GtkChild UiBackendChild;
 
-UIWindow
-ui_window_add(Ui self, const char* title, size_t title_len, size_t width, size_t height) {
+UIWindow*
+ui_window_add(Ui* self, const char* title, size_t title_len, size_t width, size_t height) {
     cassert(title);
     cassert(title_len > 0);
     cassert(width > 0);
@@ -28,7 +28,7 @@ ui_window_add(Ui self, const char* title, size_t title_len, size_t width, size_t
 }
 
 void
-ui_window_visiable(UIWindow window, bool visiable) {
+ui_window_visiable(UIWindow* window, bool visiable) {
     if(visiable) {
         gtk_widget_hide(GTK_WIDGET(window));
     } else {
@@ -41,8 +41,8 @@ ui_window_visiable(UIWindow window, bool visiable) {
 #ifdef windows_ui
 #include <windows.h>
 
-UIWindow
-ui_window_add(Ui self, const char* title, size_t title_len, size_t width, size_t height) {
+UIWindow*
+ui_window_add(Ui* self, const char* title, size_t title_len, size_t width, size_t height) {
     cassert(self);
     cassert(title);
     cassert(title_len > 0);
@@ -76,7 +76,7 @@ ui_window_add(Ui self, const char* title, size_t title_len, size_t width, size_t
 }
 
 void
-ui_window_visiable(UIWindow window, bool visiable) {
+ui_window_visiable(UIWindow* window, bool visiable) {
     cassert(window);
     
     if(visiable) {

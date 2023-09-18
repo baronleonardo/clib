@@ -14,7 +14,7 @@ int main(void) {
     char buf[buf_len];
 
     // test io_file_read
-    File f = io_file_open(STR(test_assets "/file1.txt"), "r");
+    File* f = io_file_open(STR(test_assets "/file1.txt"), "r");
     size_t amount_read = io_file_read(f, buf, buf_len);
     assert(amount_read);
     buf[amount_read] = '\0';
@@ -40,10 +40,10 @@ int main(void) {
 
     // test io_delete_recursively
     io_dir_create(STR(test_assets "/folder"));
-    File file1 = io_file_open(STR(test_assets "/folder/1.txt"), "w");
+    File* file1 = io_file_open(STR(test_assets "/folder/1.txt"), "w");
     io_file_close(&file1);
     io_dir_create(STR(test_assets "/folder/folder2"));
-    File file2 = io_file_open(STR(test_assets "/folder/folder2/.2.txt"), "w");
+    File* file2 = io_file_open(STR(test_assets "/folder/folder2/.2.txt"), "w");
     io_file_close(&file2);
     io_delete_recursively(STR(test_assets "/folder"));
 

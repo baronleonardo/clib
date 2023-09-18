@@ -5,12 +5,12 @@
 #include <array_internal.h>
 #include <cassert.h>
 
-Array
+Array*
 array_create(size_t element_size) {
     return array_create_with_capacity(element_size, 1U);
 }
 
-Array
+Array*
 array_create_with_capacity(size_t element_size, size_t capacity) {
     cassert(element_size > 0);
     cassert(capacity > 0);
@@ -25,14 +25,14 @@ array_create_with_capacity(size_t element_size, size_t capacity) {
 }
 
 size_t
-array_get_len(Array self) {
+array_get_len(Array* self) {
     cassert(self);
 
     return array_internal_get_meta(self)->len;
 }
 
 void
-array_set_len(Array self, size_t new_len) {
+array_set_len(Array* self, size_t new_len) {
     cassert(self);
 
     ArrayMeta* meta = array_internal_get_meta(self);
@@ -42,14 +42,14 @@ array_set_len(Array self, size_t new_len) {
 }
 
 size_t
-array_get_capacity(Array self) {
+array_get_capacity(Array* self) {
     cassert(self);
 
     return array_internal_get_meta(self)->capacity;
 }
 
 void
-array_set_capacity(Array* self, size_t new_capacity) {
+array_set_capacity(Array** self, size_t new_capacity) {
     cassert(self && *self);
     cassert(new_capacity > 0);
 
@@ -64,14 +64,14 @@ array_set_capacity(Array* self, size_t new_capacity) {
 }
 
 size_t
-array_get_element_size(Array self) {
+array_get_element_size(Array* self) {
     cassert(self);
 
     return array_internal_get_meta(self)->element_size;
 }
 
 void
-array_push(Array* self, const void* element) {
+array_push(Array** self, const void* element) {
     cassert(self && *self);
     cassert(element);
 
@@ -96,7 +96,7 @@ array_push(Array* self, const void* element) {
 }
 
 void*
-array_pop(Array self) {
+array_pop(Array* self) {
     cassert(self);
 
     ArrayMeta* meta = array_internal_get_meta(self);
@@ -109,7 +109,7 @@ array_pop(Array self) {
 }
 
 void*
-array_remove(Array self, size_t index) {
+array_remove(Array* self, size_t index) {
     cassert(self);
 
     ArrayMeta* meta = array_internal_get_meta(self);
@@ -118,7 +118,7 @@ array_remove(Array self, size_t index) {
     if(index == (meta->len - 1U)) {
         return array_pop(self);
     } else {
-        Array array_data = array_internal_get_data(meta);
+        Array* array_data = array_internal_get_data(meta);
         uint8_t* last_element = (uint8_t*)array_data + ((meta->len - 1U) * meta->element_size);
         uint8_t* element = (uint8_t*)array_data + (index * meta->element_size);
         uint8_t* tmp = malloc(meta->element_size);
@@ -141,7 +141,7 @@ array_remove(Array self, size_t index) {
 }
 
 void*
-array_remove_range(Array self, size_t start_index, size_t range_len) {
+array_remove_range(Array* self, size_t start_index, size_t range_len) {
     cassert(self);
 
     ArrayMeta* meta = array_internal_get_meta(self);
@@ -172,7 +172,7 @@ array_remove_range(Array self, size_t start_index, size_t range_len) {
 }
 
 void
-array_destroy(Array* self) {
+array_destroy(Array** self) {
     cassert(self);
 
     ArrayMeta* meta = array_internal_get_meta(*self);

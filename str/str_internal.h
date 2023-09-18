@@ -15,18 +15,18 @@ typedef struct {
 } StrMeta;
 
 static inline StrMeta*
-str_internal_get_meta(const Str self) {
+str_internal_get_meta(const Str* self) {
     cassert(self);
     return (&((StrMeta*)(self))[-1]);
 }
 
-static inline Str
+static inline Str*
 str_internal_get_data(const StrMeta* meta) {
-    return (Str)(&(meta[1]));
+    return (Str*)(&(meta[1]));
 }
 
 static inline char*
-str_internal_search(Str self, const char* cstring, size_t max_len, StrMeta** return_meta, size_t* return_cstring_len) {
+str_internal_search(Str* self, const char* cstring, size_t max_len, StrMeta** return_meta, size_t* return_cstring_len) {
     cassert(self);
 
     if(cstring) {

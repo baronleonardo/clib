@@ -5,7 +5,7 @@
 
 /// @brief you can always cast 'Array' to anytype you like
 ///        and use it as oridinary heap allocated array
-typedef void* Array;
+typedef void Array;
 
 /// @brief create an array with capacity of 1, and element_size
 ///        the meta data will be create followed by the data itself
@@ -18,7 +18,7 @@ typedef void* Array;
 ///        </pre>
 /// @param element_size 
 /// @return 
-Array
+Array*
 array_create(size_t element_size);
 
 
@@ -26,7 +26,7 @@ array_create(size_t element_size);
 /// @param element_size 
 /// @param capacity maximum number of elements to be allocated, minimum capacity is 1
 /// @return 
-Array
+Array*
 array_create_with_capacity(size_t element_size, size_t capacity);
 
 
@@ -34,7 +34,7 @@ array_create_with_capacity(size_t element_size, size_t capacity);
 /// @param self 
 /// @return array length
 size_t
-array_get_len(Array self);
+array_get_len(Array* self);
 
 
 /// @brief set array length
@@ -44,7 +44,7 @@ array_get_len(Array self);
 /// @param self 
 /// @param new_len 
 void
-array_set_len(Array self, size_t new_len);
+array_set_len(Array* self, size_t new_len);
 
 
 /// @brief get array capacity
@@ -54,7 +54,7 @@ array_set_len(Array self, size_t new_len);
 /// @param self 
 /// @return the capacity of the array
 size_t
-array_get_capacity(Array self);
+array_get_capacity(Array* self);
 
 
 /// @brief set capacity
@@ -64,14 +64,14 @@ array_get_capacity(Array self);
 /// @param self address of self
 /// @param new_capacity 
 void
-array_set_capacity(Array* self, size_t new_capacity);
+array_set_capacity(Array** self, size_t new_capacity);
 
 
 /// @brief get elemet_size in bytes
 /// @param self 
 /// @return elemet_size in bytes
 size_t
-array_get_element_size(Array self);
+array_get_element_size(Array* self);
 
 
 /// @brief push one element at the end
@@ -79,7 +79,7 @@ array_get_element_size(Array self);
 /// @param element if you want to push literals (example: 3, 5 or 10 ...)
 ///                array_push(array, &(int){3});
 void
-array_push(Array* self, const void* element);
+array_push(Array** self, const void* element);
 
 
 /// @brief pop one element from the end
@@ -87,7 +87,7 @@ array_push(Array* self, const void* element);
 /// @param self 
 /// @return pointer of the popped element
 void*
-array_pop(Array self);
+array_pop(Array* self);
 
 
 /// @brief remove element from Array
@@ -96,7 +96,7 @@ array_pop(Array self);
 /// @param index index to be removed
 /// @return the removed element
 void*
-array_remove(Array self, size_t index);
+array_remove(Array* self, size_t index);
 
 
 /// @brief remove a range of elements from Array
@@ -105,11 +105,11 @@ array_remove(Array self, size_t index);
 /// @param range_len range length
 /// @return the start of the removed range
 void*
-array_remove_range(Array self, size_t start_index, size_t range_len);
+array_remove_range(Array* self, size_t start_index, size_t range_len);
 
 /// @brief destroy the array from the memory
 /// @param self 
 void
-array_destroy(Array* self);
+array_destroy(Array** self);
 
 #endif // ARRAY_H

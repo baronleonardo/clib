@@ -5,7 +5,7 @@
 #include "str_internal.h"
 #include <cassert.h>
 
-Str
+Str*
 str_create(const char* cstring, size_t max_len) {
     cassert(max_len > 0);
 
@@ -23,7 +23,7 @@ str_create(const char* cstring, size_t max_len) {
 }
 
 void
-str_add(Str* self, const char* cstring, size_t max_len) {
+str_add(Str** self, const char* cstring, size_t max_len) {
     cassert(self && *self);
     cassert(cstring);
     cassert(max_len > 0);
@@ -41,7 +41,7 @@ str_add(Str* self, const char* cstring, size_t max_len) {
     }
 
 #if defined(_WIN32)
-    cassert(strncpy_s((Str)str_internal_get_data(meta) + meta->len, meta->capacity - meta->len, cstring, cstring_len) == 0);
+    cassert(strncpy_s((Str*)str_internal_get_data(meta) + meta->len, meta->capacity - meta->len, cstring, cstring_len) == 0);
 #else
     cassert(strncpy(str_internal_get_data(meta) + meta->len, cstring, cstring_len));
 #endif
@@ -50,7 +50,7 @@ str_add(Str* self, const char* cstring, size_t max_len) {
 }
 
 bool
-str_remove(Str self, const char* cstring, size_t max_len) {
+str_remove(Str* self, const char* cstring, size_t max_len) {
     cassert(self);
     cassert(cstring);
     cassert(max_len > 0);
@@ -74,7 +74,7 @@ str_remove(Str self, const char* cstring, size_t max_len) {
 }
 
 char*
-str_search(Str self, const char* cstring, size_t max_len) {
+str_search(Str* self, const char* cstring, size_t max_len) {
     cassert(self);
     cassert(cstring);
     cassert(max_len > 0);
@@ -83,7 +83,7 @@ str_search(Str self, const char* cstring, size_t max_len) {
 }
 
 size_t
-str_len(const Str self) {
+str_len(const Str* self) {
     cassert(self);
 
     StrMeta* meta = str_internal_get_meta(self);
@@ -91,7 +91,7 @@ str_len(const Str self) {
 }
 
 size_t
-str_capacity(const Str self) {
+str_capacity(const Str* self) {
     cassert(self);
 
     StrMeta* meta = str_internal_get_meta(self);
@@ -99,7 +99,7 @@ str_capacity(const Str self) {
 }
 
 void
-str_destroy(Str* self) {
+str_destroy(Str** self) {
     cassert(self && *self);
 
     StrMeta* meta = str_internal_get_meta(*self);

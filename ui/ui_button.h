@@ -6,9 +6,9 @@
 
 #include <ui.h>
 
-typedef void* UiButton;
+typedef void UiButton;
 
-UiButton
+UiButton*
 ui_button_create(
     Ui self,
     const char* label,
@@ -18,7 +18,7 @@ ui_button_create(
 
 void
 ui_button_event_clicked(
-    UiButton button,
+    UiButton* button,
     void on_click_event(UiButton button, void* extra_data),
     void* extra_data
 );

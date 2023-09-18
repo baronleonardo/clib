@@ -24,13 +24,13 @@ typedef struct {
 } MapElement;
 
 inline static MapMeta*
-map_internal_get_meta(const Map self) {
+map_internal_get_meta(const Map* self) {
     return (&((MapMeta*)(self))[-1]);
 }
 
-inline static Map
+inline static Map*
 map_internal_get_data(const MapMeta* meta) {
-    return (Map)(&(meta[1]));
+    return (Map*)(&(meta[1]));
 }
 
 static inline size_t
@@ -44,7 +44,7 @@ map_internal_hasing_algo(void* key, size_t key_size, size_t capacity) {
 }
 
 static inline MapElement
-map_internal_get_element(Map self, size_t index) {
+map_internal_get_element(const Map* self, size_t index) {
     cassert(self);
 
     MapMeta* meta = map_internal_get_meta(self);
@@ -65,7 +65,7 @@ map_internal_get_element(Map self, size_t index) {
 }
 
 static inline MapElement
-map_internal_search_and_get(Map self, void* key, size_t key_size) {
+map_internal_search_and_get(const Map* self, void* key, size_t key_size) {
     cassert(self);
 
     if(key) {

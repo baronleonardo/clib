@@ -15,7 +15,7 @@ typedef struct {
 } ArrayMeta;
 
 inline static ArrayMeta*
-array_internal_get_meta(const Array self) {
+array_internal_get_meta(const Array* self) {
     return (&((ArrayMeta*)(self))[-1]);
 }
 

@@ -5,7 +5,7 @@
 #include <map_internal.h>
 #include <cassert.h>
 
-Map
+Map*
 map_create(size_t max_capacity, size_t max_key_size, size_t max_value_size) {
     cassert(max_key_size > 0);
     cassert(max_value_size > 0);
@@ -21,7 +21,7 @@ map_create(size_t max_capacity, size_t max_key_size, size_t max_value_size) {
 }
 
 bool
-map_insert(Map* self, void* key, size_t key_size, void* value, size_t value_size) {
+map_insert(Map** self, void* key, size_t key_size, void* value, size_t value_size) {
     cassert(*self);
     cassert(key_size > 0);
     cassert(value);
@@ -54,7 +54,7 @@ map_insert(Map* self, void* key, size_t key_size, void* value, size_t value_size
 }
 
 void*
-map_get(const Map self, void* key, size_t key_size) {
+map_get(const Map* self, void* key, size_t key_size) {
     cassert(self);
     cassert(key);
     cassert(key_size > 0);
@@ -68,7 +68,7 @@ map_get(const Map self, void* key, size_t key_size) {
 }
 
 void*
-map_remove(Map self, void* key, size_t key_size) {
+map_remove(Map* self, void* key, size_t key_size) {
     cassert(self);
     cassert(key);
     cassert(key_size > 0);
@@ -87,7 +87,7 @@ map_remove(Map self, void* key, size_t key_size) {
 }
 
 size_t
-map_len(const Map self) {
+map_len(const Map* self) {
     cassert(self);
 
     MapMeta* meta = map_internal_get_meta(self);
@@ -95,7 +95,7 @@ map_len(const Map self) {
 }
 
 void
-map_destroy(Map* self) {
+map_destroy(Map** self) {
     cassert(*self);
 
     MapMeta* meta = map_internal_get_meta(*self);

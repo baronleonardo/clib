@@ -5,19 +5,19 @@
 
 #ifdef gtk
 #include <gtk/gtk.h>
-// typedef GtkButton UiBackendButton;
-// typedef GtkChild UiBackendChild;
+// typedef GtkButton UiButton;
+// typedef GtkChild UiChild;
 
 typedef struct {
-    void (*construction_handler)(UiBackend* self);
-    UiBackend* backend;
+    void (*construction_handler)(Ui* self);
+    Ui* backend;
 } UiActivationCallBackExtraData;
 
 static void
 ui_internal_gtk_on_activate_handler(GtkApplication* self, void* extra_data);
 
 
-Ui
+Ui*
 ui_create(const char* class_name, size_t class_name_len) {
     // cassert(class_name);
     // cassert(class_name_len > 0);
@@ -26,7 +26,7 @@ ui_create(const char* class_name, size_t class_name_len) {
     GtkApplication* gtk_app = gtk_application_new(class_name, G_APPLICATION_FLAGS_NONE);
     cassert_always(gtk_app);
 
-    UiBackend* app = (UiBackend*)malloc(sizeof(struct UiBackend));
+    Ui* app = (Ui*)malloc(sizeof(Ui));
     cassert(app);
     app->is_activated = false;
     app->title = "title";
@@ -37,7 +37,7 @@ ui_create(const char* class_name, size_t class_name_len) {
 }
 
 void
-ui_child_add(Ui self, UiChild child) {
+ui_child_add(Ui* self, UiChild child) {
     cassert(self);
     cassert(child);
 
@@ -46,7 +46,7 @@ ui_child_add(Ui self, UiChild child) {
 }
 
 void
-ui_mainloop(Ui self, void construction_handler(Ui self)) {
+ui_mainloop(Ui* self, void construction_handler(Ui* self)) {
     cassert(self);
     cassert(construction_handler);
 
@@ -62,7 +62,7 @@ ui_mainloop(Ui self, void construction_handler(Ui self)) {
 }
 
 void
-ui_destroy(Ui* self) {
+ui_destroy(Ui** self) {
     cassert(self && *self);
 
     g_object_unref((*self)->backend);
@@ -72,7 +72,7 @@ ui_destroy(Ui* self) {
 
 void
 ui_internal_gtk_on_activate_handler(GtkApplication* self, void* extra_data) {
-    UiBackend* backend = ((UiActivationCallBackExtraData*)extra_data)->backend;
+    Ui* backend = ((UiActivationCallBackExtraData*)extra_data)->backend;
 
     // create a window
     // GtkWindow* gtk_window = GTK_WINDOW(gtk_application_window_new(self));
@@ -93,8 +93,8 @@ ui_internal_gtk_on_activate_handler(GtkApplication* self, void* extra_data) {
 #include <cassert.h>
 
 typedef struct {
-    void (*on_activate_handler)(Ui self);
-    UiBackend* backend;
+    void (*on_activate_handler)(Ui* self);
+    Ui* backend;
 } UiActivationCallBackExtraData;
 
 static void
@@ -108,12 +108,12 @@ static LRESULT __stdcall ui_internal_win_event_handler (
 );
 
 
-Ui
+Ui*
 ui_create(const char* class_name, size_t class_name_len) {
     cassert(class_name);
     cassert(class_name_len > 0);
 
-    UiBackend* app = (UiBackend*)calloc(1, sizeof(struct UiBackend));
+    Ui* app = (Ui*)calloc(1, sizeof(Ui));
     cassert(app);
 
     WNDCLASSEX* backend = (WNDCLASSEX*)calloc(1, sizeof(WNDCLASSEX));
@@ -141,12 +141,12 @@ ui_create(const char* class_name, size_t class_name_len) {
 }
 
 void
-ui_child_add(Ui self, UiChild child) {
+ui_child_add(Ui* self, UiChild child) {
 
 }
 
 void
-ui_mainloop(Ui self, void construction_handler(Ui self)) {
+ui_mainloop(Ui* self, void construction_handler(Ui* self)) {
     // STARTUPINFO startup_info;
     // /// Specifies the window station, desktop, standard handles, and appearance of the main window for a process at creation time.
     // GetStartupInfo(&startup_info);  
@@ -184,7 +184,7 @@ ui_mainloop(Ui self, void construction_handler(Ui self)) {
 }
 
 void
-ui_destroy(Ui* self) {
+ui_destroy(Ui** self) {
     cassert(self && *self);
 
     free((*self)->backend);
@@ -201,7 +201,7 @@ LRESULT __stdcall ui_internal_win_event_handler (
     // Process messages 
     switch(msg) {
         case WM_CREATE:
-            // UiBackend* self = (UiBackend*)(((CREATESTRUCT*)lParam)->lpCreateParams);
+            // Ui* self = (Ui*)(((CREATESTRUCT*)lParam)->lpCreateParams);
             // self->on_activate_handler(self);
             break;
         case WM_CLOSE:		

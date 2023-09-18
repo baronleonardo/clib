@@ -5,27 +5,27 @@
 #include <stdint.h>
 #include <stdbool.h>
 
-typedef char* Str;
+typedef char Str;
 
-Str
+Str*
 str_create(const char* cstring, size_t max_len);
 
 void
-str_add(Str* self, const char* cstring, size_t max_len);
+str_add(Str** self, const char* cstring, size_t max_len);
 
 char*
-str_search(Str self, const char* cstring, size_t max_len);
+str_search(Str* self, const char* cstring, size_t max_len);
 
 bool
-str_remove(Str self, const char* cstring, size_t max_len);
+str_remove(Str* self, const char* cstring, size_t max_len);
 
 size_t
-str_len(const Str self);
+str_len(const Str* self);
 
 size_t
-str_capacity(const Str self);
+str_capacity(const Str* self);
 
 void
-str_destroy(Str* self);
+str_destroy(Str** self);
 
 #endif // STRING_H
