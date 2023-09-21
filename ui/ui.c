@@ -5,8 +5,6 @@
 
 #ifdef gtk
 #include <gtk/gtk.h>
-// typedef GtkButton UiButton;
-// typedef GtkChild UiChild;
 
 typedef struct {
     void (*construction_handler)(Ui* self);
@@ -37,15 +35,6 @@ ui_create(const char* class_name, size_t class_name_len) {
 }
 
 void
-ui_child_add(Ui* self, UiChild child) {
-    cassert(self);
-    cassert(child);
-
-    GtkWindow* current_window = gtk_application_get_active_window(self->backend);
-    gtk_container_add(GTK_CONTAINER(current_window), child);
-}
-
-void
 ui_mainloop(Ui* self, void construction_handler(Ui* self)) {
     cassert(self);
     cassert(construction_handler);
@@ -55,7 +44,7 @@ ui_mainloop(Ui* self, void construction_handler(Ui* self)) {
         .construction_handler = construction_handler
     };
 
-    g_signal_connect (self->backend, "activate", G_CALLBACK(ui_internal_gtk_on_activate_handler), &extra_data);
+    g_signal_connect(self->backend, "activate", G_CALLBACK(ui_internal_gtk_on_activate_handler), &extra_data);
 
     self->is_activated = true;
     cassert(g_application_run(G_APPLICATION(self->backend), 0, NULL) == 0);

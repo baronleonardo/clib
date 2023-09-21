@@ -2,24 +2,25 @@
 #include <cassert.h>
 
 #ifdef gtk
-#include <ui_internal_gtk/ui_internal_gtk_button.h>
+#include <gtk/gtk.h>
 
 UiButton*
-ui_button_create(
-    Ui* self,
-    const char* label,
-    size_t label_len
-) {
+ui_button_create(Ui* self, const char* label, size_t label_len) {
     cassert(self);
     cassert(label);
     cassert(label_len > 0);
 
-    return (UiBackendButton *)ui_internal_gtk_button_add(self, label, label_len);
+    GtkButton* button = GTK_BUTTON(gtk_button_new_with_label(label));
+    cassert_always(button);
+
+    gtk_widget_show(GTK_WIDGET(button));
+
+    return button;
 }
 
 void
 ui_button_event_clicked(UiButton* button, void on_click_event(UiButton* button, void* extra_data), void* extra_data) {
-    ui_internal_gtk_button_event_clicked(button, (void (*)(UiBackendButton*, void*))on_click_event, extra_data);
+    g_signal_connect(button, "clicked", G_CALLBACK(on_click_event), extra_data);
 }
 #endif // gtk
 
@@ -37,11 +38,11 @@ ui_button_create(
     cassert(label);
     cassert(label_len > 0);
 
-    return (UiBackendButton *)ui_internal_win_button_add(self, label, label_len);
+    
 }
 
 void
 ui_button_event_clicked(UiButton* button, void on_click_event(UiButton* button, void* extra_data), void* extra_data) {
-    ui_internal_win_button_event_clicked(button, (void (*)(UiBackendButton*, void*))on_click_event, extra_data);
+    ui_internal_win_button_event_clicked(button, (void (*)(UiButton*, void*))on_click_event, extra_data);
 }
 #endif // windows_ui

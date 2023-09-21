@@ -5,14 +5,18 @@
 
 #include <ui.h>
 
-typedef void UIWindow;
+typedef void UiWindow;
 
 
-UIWindow*
+UiWindow*
 ui_window_add(Ui* self, const char* title, size_t title_len, size_t width, size_t height);
 
 
 void
-ui_window_visiable(UIWindow* window, bool visiable);
+ui_window_child_add(UiWindow* window, UiChild* child);
+
+
+void
+ui_window_show(UiWindow* window, bool is_shown);
 
 #endif // UI_WINDOW_H

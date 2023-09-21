@@ -10,15 +10,11 @@ typedef struct Ui {
     size_t title_len;
     void* backend;
 } Ui;
-typedef void* UiChild;
+typedef void UiChild;
 
 
 Ui*
 ui_create(const char* class_name, size_t class_name_len);
-
-
-void
-ui_child_add(Ui* self, UiChild child);
 
 
 void

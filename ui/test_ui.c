@@ -1,6 +1,6 @@
 #include <ui.h>
 #include <ui_window.h>
-// #include <ui_button.h>
+#include <ui_button.h>
 
 #undef NDEBUG
 #include <assert.h>
@@ -9,33 +9,36 @@
 
 #define STR(str) (str), (sizeof((str)) - 1)
 
-// void
-// on_button_clicked_event(UiButton button, void* extra_data) {
-//     (void)button;
-//     (void)extra_data;
+void
+on_button_clicked_event(UiButton* button, void* extra_data) {
+    (void)button;
+    (void)extra_data;
 
-//     puts("clicked");
-// }
+    puts("clicked");
+}
 
 void
 on_activate_handler(Ui* self) {
-    puts("Hello there");
-    UIWindow* window = ui_window_add(self, STR("This is a title"), 800, 600);
-    (void)window;
-    // ui_window_visiable(window, true);
+    puts("activated");
+
+    UiWindow* window = ui_window_add(self, STR("This is a title"), 800, 600);
+    // (void)window;
+    // ui_window_show(window, true);
     // ui_child_add(self, window);
 
-    // UiButton* button = ui_button_create(self, STR("button"));
-    // ui_button_event_clicked(button, on_button_clicked_event, NULL);
-    // ui_child_add(self, button);
+    UiButton* button = ui_button_create(self, STR("button"));
+    ui_button_event_clicked(button, on_button_clicked_event, NULL);
+    ui_window_child_add(window, button);
+
+    // ui_window_show(window, true);
 }
 
 int main() {
     // if you register class if you are using vscode on flatpak,
     // it will crash as vscode doesn't have a permission to register to dbus
-    // Ui* ui = ui_create(NULL, 0);
-    Ui* ui = ui_create(STR("com.windows.ui"));
-    // UIWindow* window = ui_window_add(ui, STR("This is a title"), 800, 600);
+    Ui* ui = ui_create(NULL, 0);
+    // Ui* ui = ui_create(STR("com.windows.ui"));
+    // UiWindow* window = ui_window_add(ui, STR("This is a title"), 800, 600);
     // (void)window;
 
     ui_mainloop(ui, on_activate_handler);
