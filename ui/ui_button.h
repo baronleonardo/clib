@@ -8,8 +8,14 @@
 
 typedef void UiButton;
 
+
+/// @brief create a new push button
+/// @param parent this can be anything starting from UiWindow till UiButton for example
+/// @param label 
+/// @param label_len 
+/// @return 
 UiButton*
-ui_button_create(Ui* self, const char* label, size_t label_len);
+ui_button_create(UiWidget* parent, const char* label, size_t label_len);
 
 
 void

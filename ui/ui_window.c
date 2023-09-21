@@ -25,7 +25,7 @@ ui_window_add(Ui* self, const char* title, size_t title_len, size_t width, size_
 }
 
 void
-ui_window_child_add(UiWindow* window, UiChild* child) {
+ui_window_child_add(UiWindow* window, UiWidget* child) {
     cassert(window);
     cassert(child);
 
@@ -70,8 +70,9 @@ ui_window_add(Ui* self, const char* title, size_t title_len, size_t width, size_
     cassert_always(window);
 
     STARTUPINFO startup_info;
-    /// Specifies the window station, desktop, standard handles, and appearance of the main window for a process at creation time.
-    GetStartupInfo(&startup_info);  
+    /// Specifies the window station, desktop, standard handles,
+    /// and appearance of the main window for a process at creation time.
+    GetStartupInfo(&startup_info); 
     int nCmdShow = startup_info.wShowWindow;
 
     cassert_always(ShowWindow(window, nCmdShow));
@@ -81,15 +82,16 @@ ui_window_add(Ui* self, const char* title, size_t title_len, size_t width, size_
 }
 
 void
+ui_window_child_add(UiWindow* window, UiWidget* child) {
+    cassert_always(SetParent((HWND)child, (HWND)window));
+    cassert_always(UpdateWindow(window));
+}
+
+void
 ui_window_show(UiWindow* window, bool is_shown) {
     cassert(window);
     
     if(is_shown) {
-        // STARTUPINFO startup_info;
-        // /// Specifies the window station, desktop, standard handles, and appearance of the main window for a process at creation time.
-        // GetStartupInfo(&startup_info);  
-        // int nCmdShow = startup_info.wShowWindow;
-
         cassert_always(ShowWindow((HWND)window, SW_SHOW));
     } else {
         cassert_always(ShowWindow((HWND)window, SW_HIDE));

@@ -13,7 +13,7 @@ ui_window_add(Ui* self, const char* title, size_t title_len, size_t width, size_
 
 
 void
-ui_window_child_add(UiWindow* window, UiChild* child);
+ui_window_child_add(UiWindow* window, UiWidget* child);
 
 
 void

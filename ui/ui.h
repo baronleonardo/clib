@@ -10,7 +10,7 @@ typedef struct Ui {
     size_t title_len;
     void* backend;
 } Ui;
-typedef void UiChild;
+typedef void UiWidget;
 
 
 Ui*

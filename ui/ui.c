@@ -130,11 +130,6 @@ ui_create(const char* class_name, size_t class_name_len) {
 }
 
 void
-ui_child_add(Ui* self, UiChild child) {
-
-}
-
-void
 ui_mainloop(Ui* self, void construction_handler(Ui* self)) {
     // STARTUPINFO startup_info;
     // /// Specifies the window station, desktop, standard handles, and appearance of the main window for a process at creation time.
@@ -142,8 +137,6 @@ ui_mainloop(Ui* self, void construction_handler(Ui* self)) {
     // int nCmdShow = startup_info.wShowWindow;
 
     self->is_activated = true;
-    // self->on_activate_handler = on_activate_handler;
-    // self->on_activate_handler(self);
     construction_handler(self);
 
     // HWND window = CreateWindowA(
