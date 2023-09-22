@@ -95,6 +95,19 @@ map_len(const Map* self) {
 }
 
 void
+map_foreach(Map* self, void handler(void* key, void* value, void* extra_data), void* extra_data) {
+    cassert(self);
+    cassert(handler);
+
+    MapMeta* meta = map_internal_get_meta(self);
+
+    for(size_t iii = 0; iii < meta->len; ++iii) {
+        MapElement element = map_internal_get_element(self, iii);
+        handler(element.key, element.value, extra_data);
+    }
+}
+
+void
 map_destroy(Map** self) {
     cassert(*self);
 

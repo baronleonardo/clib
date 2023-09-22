@@ -30,6 +30,9 @@ size_t
 map_len(const Map* self);
 
 void
+map_foreach(Map* self, void handler(void* key, void* value, void* extra_data), void* extra_data);
+
+void
 map_destroy(Map** self);
 
 #endif // MAP_H
