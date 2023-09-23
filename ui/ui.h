@@ -6,8 +6,6 @@
 
 typedef struct Ui {
     bool is_activated;
-    const char* title;
-    size_t title_len;
     void* backend;
 } Ui;
 typedef void UiWidget;

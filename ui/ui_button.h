@@ -25,4 +25,7 @@ ui_button_event_clicked(
     void* extra_data
 );
 
+void
+ui_button_destroy(UiButton** button);
+
 #endif // UI_BUTTON

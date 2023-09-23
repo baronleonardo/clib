@@ -6,12 +6,12 @@
 #include <gtk/gtk.h>
 
 UiWindow*
-ui_window_add(Ui* self, const char* title, size_t title_len, size_t width, size_t height) {
+ui_window_create(Ui* self, const char* title, size_t title_len, size_t width, size_t height) {
     cassert(title);
     cassert(title_len > 0);
     cassert(width > 0);
     cassert(height > 0);
-    cassert_always_msg(self->is_activated, ERROR_MSG_NOT_ACTIVATED("ui_window_add"));
+    cassert_always_msg(self->is_activated, ERROR_MSG_NOT_ACTIVATED("ui_window_create"));
 
     // create a window
     GtkWindow* gtk_window = GTK_WINDOW(gtk_application_window_new(self->backend));
@@ -47,14 +47,14 @@ ui_window_show(UiWindow* window, bool is_shown) {
 #include <windows.h>
 
 UiWindow*
-ui_window_add(Ui* self, const char* title, size_t title_len, size_t width, size_t height) {
+ui_window_create(Ui* self, const char* title, size_t title_len, size_t width, size_t height) {
     cassert(self);
     cassert(title);
     cassert(title_len > 0);
     cassert(title[title_len] == '\0');
-    cassert_always_msg(self->is_activated, ERROR_MSG_NOT_ACTIVATED("ui_window_add"));
+    cassert_always_msg(self->is_activated, ERROR_MSG_NOT_ACTIVATED("ui_window_create"));
 
-    HWND window = CreateWindowA(
+    HWND backend = CreateWindowA(
         ((WNDCLASSEX*)self->backend)->lpszClassName,
         title,
         WS_OVERLAPPEDWINDOW | WS_VISIBLE,
@@ -67,7 +67,7 @@ ui_window_add(Ui* self, const char* title, size_t title_len, size_t width, size_
         ((WNDCLASSEX*)self->backend)->hInstance,
         self
     );
-    cassert_always(window);
+    cassert_always(backend);
 
     STARTUPINFO startup_info;
     /// Specifies the window station, desktop, standard handles,
@@ -75,16 +75,16 @@ ui_window_add(Ui* self, const char* title, size_t title_len, size_t width, size_
     GetStartupInfo(&startup_info); 
     int nCmdShow = startup_info.wShowWindow;
 
-    cassert_always(ShowWindow(window, nCmdShow));
-    cassert_always(UpdateWindow(window));
+    cassert_always(ShowWindow(backend, nCmdShow));
+    cassert_always(UpdateWindow(backend));
 
-    return window;
+    return backend;
 }
 
 void
 ui_window_child_add(UiWindow* window, UiWidget* child) {
     cassert_always(SetParent((HWND)child, (HWND)window));
-    cassert_always(UpdateWindow(window));
+    cassert_always(UpdateWindow((HWND)window));
 }
 
 void
@@ -96,5 +96,13 @@ ui_window_show(UiWindow* window, bool is_shown) {
     } else {
         cassert_always(ShowWindow((HWND)window, SW_HIDE));
     }
+}
+
+void
+ui_window_destroy(UiWindow** window) {
+    cassert(window && *window);
+
+    cassert(DestroyWindow(*window));
+    free(*window);
 }
 #endif // windows_ui

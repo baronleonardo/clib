@@ -1,6 +1,7 @@
 
 
 #include <ui.h>
+#include <ui_internal.h>
 #include <cassert.h>
 
 #ifdef gtk
@@ -80,11 +81,6 @@ ui_internal_gtk_on_activate_handler(GtkApplication* self, void* extra_data) {
 #include <stdbool.h>
 
 #include <cassert.h>
-
-typedef struct {
-    void (*on_activate_handler)(Ui* self);
-    Ui* backend;
-} UiActivationCallBackExtraData;
 
 static void
 ui_internal_win_on_activate_handler(void* self, void* extra_data);
@@ -190,6 +186,7 @@ LRESULT __stdcall ui_internal_win_event_handler (
             DestroyWindow(hwnd);
             break;
         case WM_DESTROY:
+            cassert(EnumChildWindows(hwnd, ui_internal_event_window_destroy, 0));
             PostQuitMessage(0);
             break;
         case WM_MOVE:
@@ -199,6 +196,8 @@ LRESULT __stdcall ui_internal_win_event_handler (
         case WM_COMMAND:
             switch(HIWORD(wParam)) {
                 case BN_CLICKED:
+                    UiChildEvent* child_event = (UiChildEvent*)GetWindowLongPtr((HWND)lParam, GWL_USERDATA);
+                    child_event->handler((HWND)lParam, child_event->extra_data);
                     // puts("clicked");
                     break;
                 case EN_UPDATE:

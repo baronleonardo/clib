@@ -15,13 +15,14 @@ on_button_clicked_event(UiButton* button, void* extra_data) {
     (void)extra_data;
 
     puts("clicked");
+    ui_button_destroy(&button);
 }
 
 void
 on_activate_handler(Ui* self) {
     puts("activated");
 
-    UiWindow* window = ui_window_add(self, STR("This is a title"), 800, 600);
+    UiWindow* window = ui_window_create(self, STR("This is a title"), 800, 600);
     // (void)window;
     // ui_window_show(window, true);
     // ui_child_add(self, window);
@@ -38,7 +39,7 @@ int main() {
     // it will crash as vscode doesn't have a permission to register to dbus
     // Ui* ui = ui_create(NULL, 0);
     Ui* ui = ui_create(STR("com.windows.ui"));
-    // UiWindow* window = ui_window_add(ui, STR("This is a title"), 800, 600);
+    // UiWindow* window = ui_window_create(ui, STR("This is a title"), 800, 600);
     // (void)window;
 
     ui_mainloop(ui, on_activate_handler);
