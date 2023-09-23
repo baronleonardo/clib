@@ -15,7 +15,7 @@ array_create_with_capacity(size_t element_size, size_t capacity) {
     cassert(element_size > 0);
     cassert(capacity > 0);
 
-    ArrayMeta* meta = calloc(1U, sizeof(ArrayMeta) + (capacity * element_size));
+    ArrayMeta* meta = (ArrayMeta*)calloc(1U, sizeof(ArrayMeta) + (capacity * element_size));
     cassert(meta);
 
     meta->capacity = capacity;

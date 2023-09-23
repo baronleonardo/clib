@@ -64,6 +64,8 @@ ui_button_create(
         NULL // Pointer not needed.
     );
     cassert_always(button);
+    cassert_always(SetParent(button, (HWND)parent));
+    cassert_always(UpdateWindow((HWND)parent));
 
     return button;
 }

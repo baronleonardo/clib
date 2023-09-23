@@ -187,7 +187,7 @@ LRESULT __stdcall ui_internal_win_event_handler (
             DestroyWindow(hwnd);
             break;
         case WM_DESTROY:
-            cassert(EnumChildWindows(hwnd, ui_internal_event_window_destroy, 0));
+            EnumChildWindows(hwnd, ui_internal_event_window_destroy, 0);
             PostQuitMessage(0);
             break;
         case WM_MOVE:
