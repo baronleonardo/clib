@@ -13,7 +13,7 @@ ui_button_create(UiWidget* parent, const char* label, size_t label_len) {
     GtkButton* button = GTK_BUTTON(gtk_button_new_with_label(label));
     cassert_always(button);
 
-    gtk_widget_set_parent(GTK_WIDGET(button), parent);
+    gtk_container_add(GTK_CONTAINER(parent), GTK_WIDGET(button));
     gtk_widget_show(GTK_WIDGET(button));
 
     return button;
@@ -22,6 +22,13 @@ ui_button_create(UiWidget* parent, const char* label, size_t label_len) {
 void
 ui_button_event_clicked(UiButton* button, void on_click_event(UiButton* button, void* extra_data), void* extra_data) {
     g_signal_connect(button, "clicked", G_CALLBACK(on_click_event), extra_data);
+}
+
+void
+ui_button_destroy(UiButton** button) {
+    cassert(button && *button);
+
+    gtk_widget_destroy(GTK_WIDGET(*button));
 }
 #endif // gtk
 

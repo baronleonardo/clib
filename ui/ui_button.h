@@ -25,6 +25,8 @@ ui_button_event_clicked(
     void* extra_data
 );
 
+/// @brief 
+/// @param button 
 void
 ui_button_destroy(UiButton** button);
 

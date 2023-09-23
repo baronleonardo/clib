@@ -7,6 +7,7 @@
 typedef struct Ui {
     bool is_activated;
     void* backend;
+    void* callback;
 } Ui;
 typedef void UiWidget;
 

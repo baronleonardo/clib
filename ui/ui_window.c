@@ -25,14 +25,6 @@ ui_window_create(Ui* self, const char* title, size_t title_len, size_t width, si
 }
 
 void
-ui_window_child_add(UiWindow* window, UiWidget* child) {
-    cassert(window);
-    cassert(child);
-
-    gtk_container_add(GTK_CONTAINER(window), GTK_WIDGET(child));
-}
-
-void
 ui_window_show(UiWindow* window, bool is_shown) {
     if(is_shown) {
         gtk_widget_show_all(GTK_WIDGET(window));
@@ -79,12 +71,6 @@ ui_window_create(Ui* self, const char* title, size_t title_len, size_t width, si
     cassert_always(UpdateWindow(backend));
 
     return backend;
-}
-
-void
-ui_window_child_add(UiWindow* window, UiWidget* child) {
-    cassert_always(SetParent((HWND)child, (HWND)window));
-    cassert_always(UpdateWindow((HWND)window));
 }
 
 void
