@@ -9,8 +9,12 @@ if (MSVC)
         /W4
         /WX
         /utf-8
+        /Zi
         $<$<CONFIG:DEBUG>:/fsanitize=address>
-        $<$<CONFIG:DEBUG>:/RTCcsu>
+        # $<$<CONFIG:DEBUG>:/RTCcsu>
+    )
+    add_link_options(
+        $<$<CONFIG:DEBUG>:/INCREMENTAL:NO>
     )
 else()
     # additional warnings
