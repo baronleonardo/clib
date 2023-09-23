@@ -33,8 +33,8 @@ str_add(Str** self, const char* cstring, size_t max_len) {
 
     // resize
     if((meta->len + cstring_len + 1) > meta->capacity) {
-        *self = realloc(*self, meta->capacity + cstring_len);
-        cassert(*self);
+        meta = realloc(meta, sizeof(StrMeta) + (meta->capacity + cstring_len));
+        cassert(meta);
 
         meta = str_internal_get_meta(*self);
         meta->capacity += cstring_len;
