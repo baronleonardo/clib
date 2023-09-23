@@ -6,7 +6,7 @@ set(CMAKE_DEBUG_POSTFIX _debug)
 if (MSVC)
     # warning level 4
     add_compile_options(
-        /Wall
+        /W4
         /WX
         /utf-8
         $<$<CONFIG:DEBUG>:/fsanitize=address>
