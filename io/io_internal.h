@@ -12,7 +12,7 @@
 
 #if defined(_WIN32)
 static inline size_t
-io_internal_path_u8_to_wide(const char path[], size_t path_len, wchar_t** out_wide_path) {
+utf8_to_unicode(const char path[], size_t path_len, wchar_t** out_wide_path) {
     cassert(path);
     cassert(out_wide_path);
     cassert(path_len > 0);
@@ -31,7 +31,7 @@ io_internal_path_u8_to_wide(const char path[], size_t path_len, wchar_t** out_wi
 }
 
 static inline size_t
-io_internal_path_wide_to_u8(const wchar_t wide_path[], size_t wide_path_len, char** out_path) {
+unicode_to_utf8(const wchar_t wide_path[], size_t wide_path_len, char** out_path) {
     cassert(wide_path);
     cassert(out_path);
     cassert(wide_path_len > 0);

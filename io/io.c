@@ -24,11 +24,14 @@ io_file_open(const char* path, size_t path_len, const char mode[]) {
 
 #if defined(_WIN32)   // MSVC on windows
     FILE* opened_file = NULL;
-    wchar_t* wide_path;
-    (void)io_internal_path_u8_to_wide(path, path_len, &wide_path);
+    wchar_t* wide_path = NULL;
+    (void)utf8_to_unicode(path, path_len, &wide_path);
+    wchar_t* wide_mode = NULL;
+    (void)utf8_to_unicode(mode, strlen(mode), &wide_mode);
 
-    cassert_always_perror(_wfopen_s(&opened_file, wide_path, (wchar_t*)mode) == 0, path);
+    cassert_always_perror(_wfopen_s(&opened_file, wide_path, wide_mode) == 0, path);
     free(wide_path);
+    free(wide_mode);
 #else
     FILE* opened_file = fopen(path, mode);
     cassert_always_perror(opened_file, path);
@@ -217,7 +220,7 @@ io_foreach(
     wchar_t buf[buf_len];
 
     wchar_t* wide_path = NULL;
-    size_t wide_path_len = io_internal_path_u8_to_wide(dir_path, path_len, &wide_path);
+    size_t wide_path_len = utf8_to_unicode(dir_path, path_len, &wide_path);
 
     cassert(memcpy_s(buf, buf_len, wide_path, wide_path_len * sizeof(wchar_t)) == 0);
     buf[wide_path_len] = L'/';
@@ -235,7 +238,7 @@ io_foreach(
             buf[wide_path_len - 1 + filename_len] = L'\0';
 
             char* u8path = NULL;
-            size_t u8path_len = io_internal_path_wide_to_u8(buf, wide_path_len - 1 + filename_len, &u8path);
+            size_t u8path_len = unicode_to_utf8(buf, wide_path_len - 1 + filename_len, &u8path);
 
             bool handler_status = handler(u8path, u8path_len, extra_data);
             free(u8path);
