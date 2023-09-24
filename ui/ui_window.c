@@ -46,7 +46,7 @@ ui_window_create(Ui* self, const char* title, size_t title_len, size_t width, si
     cassert(title[title_len] == '\0');
     cassert_always_msg(self->is_activated, ERROR_MSG_NOT_ACTIVATED("ui_window_create"));
 
-    HWND backend = CreateWindowA(
+    HWND backend = CreateWindow(
         ((WNDCLASSEX*)self->backend)->lpszClassName,
         title,
         WS_OVERLAPPEDWINDOW | WS_VISIBLE,

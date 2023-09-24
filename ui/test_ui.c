@@ -1,6 +1,7 @@
 #include <ui.h>
 #include <ui_window.h>
 #include <ui_button.h>
+#include <ui_box.h>
 
 #undef NDEBUG
 #include <assert.h>
@@ -27,18 +28,24 @@ on_activate_handler(Ui* self) {
     // ui_window_show(window, true);
     // ui_child_add(self, window);
 
-    UiButton* button = ui_button_create(window, STR("button"));
+    UiBox* box = ui_box_create(window, true, 10);
+
+    UiButton* button = ui_button_create(box, STR("button"));
     ui_button_event_clicked(button, on_button_clicked_event, NULL);
+    UiButton* button2 = ui_button_create(box, STR("button2"));
+    ui_button_event_clicked(button2, on_button_clicked_event, NULL);
     // ui_window_child_add(window, button);
 
     // ui_window_show(window, true);
+    // ui_box_push(box, button);
+    // ui_box_push(box, button2);
 }
 
 int main() {
     // if you register class if you are using vscode on flatpak,
     // it will crash as vscode doesn't have a permission to register to dbus
-    // Ui* ui = ui_create(NULL, 0);
-    Ui* ui = ui_create(STR("com.windows.ui"));
+    Ui* ui = ui_create(NULL, 0);
+    // Ui* ui = ui_create(STR("com.windows.ui"));
     // UiWindow* window = ui_window_create(ui, STR("This is a title"), 800, 600);
     // (void)window;
 

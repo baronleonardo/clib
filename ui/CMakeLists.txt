@@ -12,6 +12,8 @@ add_library(ui
     ui_window.c
     ui_button.h
     ui_button.c
+    ui_box.h
+    ui_box.c
 )
 target_include_directories(ui PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 target_link_libraries(ui PUBLIC common)
@@ -59,7 +61,7 @@ endif()
 # install
 set_target_properties(ui
     PROPERTIES
-    PUBLIC_HEADER "ui.h;ui_window.h;ui_button.h"
+    PUBLIC_HEADER "ui.h;ui_window.h;ui_button.h;ui_box.h"
 )
 install(TARGETS ui)
 
