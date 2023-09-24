@@ -23,13 +23,13 @@ io_file_open(const char* path, size_t path_len, const char mode[]) {
     cassert(path[path_len] == '\0');
 
 #if defined(_WIN32)   // MSVC on windows
-    FILE* opened_file = NULL;
     wchar_t* wide_path = NULL;
     (void)utf8_to_unicode(path, path_len, &wide_path);
     wchar_t* wide_mode = NULL;
     (void)utf8_to_unicode(mode, strlen(mode), &wide_mode);
 
-    cassert_always_perror(_wfopen_s(&opened_file, wide_path, wide_mode) == 0, path);
+    File* opened_file = _wfsopen(wide_path, wide_mode, _SH_DENYNO);
+    cassert_always_perror(opened_file, path);
     free(wide_path);
     free(wide_mode);
 #else
