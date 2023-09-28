@@ -5,7 +5,7 @@
 #include "str_internal.h"
 #include <cassert.h>
 
-Str*
+Str
 str_create(const char* cstring, size_t max_len) {
     cassert(max_len > 0);
 
@@ -19,16 +19,16 @@ str_create(const char* cstring, size_t max_len) {
     cassert(memcpy(str_internal_get_data(meta), cstring, cstring_len));
     str_internal_get_data(meta)[cstring_len] = '\0';
 
-    return str_internal_get_data(meta);
+    return (Str) { .data = str_internal_get_data(meta) };
 }
 
 void
-str_add(Str** self, const char* cstring, size_t max_len) {
-    cassert(self && *self);
+str_add(Str* self, const char* cstring, size_t max_len) {
+    cassert(self && self->data);
     cassert(cstring);
     cassert(max_len > 0);
 
-    StrMeta* meta = str_internal_get_meta(*self);
+    StrMeta* meta = str_internal_get_meta(self);
     size_t cstring_len = strnlen(cstring, max_len);
 
     // resize
@@ -36,7 +36,7 @@ str_add(Str** self, const char* cstring, size_t max_len) {
         meta = realloc(meta, sizeof(StrMeta) + (meta->capacity + cstring_len));
         cassert(meta);
 
-        meta = str_internal_get_meta(*self);
+        meta = str_internal_get_meta(self);
         meta->capacity += cstring_len;
     }
 
@@ -51,7 +51,7 @@ str_add(Str** self, const char* cstring, size_t max_len) {
 
 bool
 str_remove(Str* self, const char* cstring, size_t max_len) {
-    cassert(self);
+    cassert(self && self->data);
     cassert(cstring);
     cassert(max_len > 0);
 
@@ -75,7 +75,7 @@ str_remove(Str* self, const char* cstring, size_t max_len) {
 
 char*
 str_search(Str* self, const char* cstring, size_t max_len) {
-    cassert(self);
+    cassert(self && self->data);
     cassert(cstring);
     cassert(max_len > 0);
 
@@ -84,7 +84,7 @@ str_search(Str* self, const char* cstring, size_t max_len) {
 
 size_t
 str_len(const Str* self) {
-    cassert(self);
+    cassert(self && self->data);
 
     StrMeta* meta = str_internal_get_meta(self);
     return meta->len;
@@ -92,17 +92,17 @@ str_len(const Str* self) {
 
 size_t
 str_capacity(const Str* self) {
-    cassert(self);
+    cassert(self && self->data);
 
     StrMeta* meta = str_internal_get_meta(self);
     return meta->capacity;
 }
 
 void
-str_destroy(Str** self) {
-    cassert(self && *self);
+str_destroy(Str* self) {
+    cassert(self && self->data);
 
-    StrMeta* meta = str_internal_get_meta(*self);
+    StrMeta* meta = str_internal_get_meta(self);
     free(meta);
-    *self = NULL;
+    self->data = NULL;
 }

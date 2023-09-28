@@ -16,12 +16,12 @@ typedef struct {
 
 inline static ArrayMeta*
 array_internal_get_meta(const Array* self) {
-    return (&((ArrayMeta*)(self))[-1]);
+    return (&((ArrayMeta*)(self->data))[-1]);
 }
 
-inline static Array*
+inline static void*
 array_internal_get_data(const ArrayMeta* self) {
-    return (Array*)(&self[1]);
+    return (void*)(&self[1]);
 }
 
 #endif // LIST_INTERNAL_H

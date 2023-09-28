@@ -25,12 +25,12 @@ typedef struct {
 
 inline static MapMeta*
 map_internal_get_meta(const Map* self) {
-    return (&((MapMeta*)(self))[-1]);
+    return (&((MapMeta*)(self->data))[-1]);
 }
 
-inline static Map*
+inline static void*
 map_internal_get_data(const MapMeta* meta) {
-    return (Map*)(&(meta[1]));
+    return (void*)(&meta[1]);
 }
 
 static inline size_t
@@ -50,7 +50,7 @@ map_internal_get_element(const Map* self, size_t index) {
     MapMeta* meta = map_internal_get_meta(self);
     // Map element = (Map)((uint8_t*)(map_internal_get_data(self)) + (index * MAP_ELEMENT_SIZE(meta)));
 
-    bool* is_filled_addr = (bool*)self + 
+    bool* is_filled_addr = (bool*)self->data + 
         (index * (meta->max_key_size + meta->max_value_size + sizeof(bool)));
     uint8_t* key_addr = (uint8_t*)is_filled_addr + sizeof(bool);
     uint8_t* value_addr = key_addr + meta->max_key_size;

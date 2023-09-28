@@ -14,8 +14,8 @@ int main(void) {
     char buf[buf_len];
 
     // test io_file_read
-    File* f = io_file_open(STR(test_assets "/file1.txt"), "r");
-    size_t amount_read = io_file_read(f, buf, buf_len);
+    File f = io_file_open(STR(test_assets "/file1.txt"), "r");
+    size_t amount_read = io_file_read(&f, buf, buf_len);
     assert(amount_read);
     buf[amount_read] = '\0';
     assert(strncmp(buf, "May peace be upon you\n", amount_read) == 0);
@@ -23,7 +23,7 @@ int main(void) {
 
     // test io_file_read - utf8
     f = io_file_open(STR(test_assets "/فايل2.txt"), "r");
-    amount_read = io_file_read(f, buf, buf_len);
+    amount_read = io_file_read(&f, buf, buf_len);
     assert(amount_read);
     buf[amount_read] = '\0';
     assert(strncmp(buf, "الحمد لله\n", amount_read) == 0);
@@ -34,16 +34,16 @@ int main(void) {
     const char* out = "بسم الله الرحمن الرحيم\n";
     size_t out_len = strlen(out);
     assert(memcpy(buf, out, out_len));
-    assert(io_file_write(f, buf, out_len));
+    assert(io_file_write(&f, buf, out_len));
     io_file_close(&f);
     io_delete(STR(test_assets "/out-file.txt"));
 
     // test io_delete_recursively
     io_dir_create(STR(test_assets "/folder"));
-    File* file1 = io_file_open(STR(test_assets "/folder/1.txt"), "w");
+    File file1 = io_file_open(STR(test_assets "/folder/1.txt"), "w");
     io_file_close(&file1);
     io_dir_create(STR(test_assets "/folder/folder2"));
-    File* file2 = io_file_open(STR(test_assets "/folder/folder2/.2.txt"), "w");
+    File file2 = io_file_open(STR(test_assets "/folder/folder2/.2.txt"), "w");
     io_file_close(&file2);
     io_delete_recursively(STR(test_assets "/folder"));
 
@@ -55,7 +55,7 @@ int main(void) {
     // test io_foreach
     bool file_found = false;
     io_foreach(STR(test_assets), handler, &file_found);
-    assert(file_found);
+    assert(&file_found);
 
     // test io_delete
     io_dir_create(STR(test_assets "/folder2"));

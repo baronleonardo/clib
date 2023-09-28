@@ -15,7 +15,7 @@
 
 #define MIN(X, Y) (((X) < (Y)) ? (X) : (Y))
 
-File*
+File
 io_file_open(const char* path, size_t path_len, const char mode[]) {
     cassert(mode);
     cassert(path);
@@ -37,53 +37,53 @@ io_file_open(const char* path, size_t path_len, const char mode[]) {
     cassert_always_perror(opened_file, path);
 #endif
 
-    return opened_file;
+    return (File){ .data = opened_file };
 }
 
 size_t
 io_file_size(File* self) {
-    cassert(self);
+    cassert(self && self->data);
 
-    cassert_always_perror(fseek(self, 0, SEEK_END) == 0, "");
-    size_t fsize = ftell(self);
-    cassert_always_perror(fseek(self, 0, SEEK_SET) == 0 , "");  /* same as rewind(f); */
+    cassert_always_perror(fseek(self->data, 0, SEEK_END) == 0, "");
+    size_t fsize = ftell(self->data);
+    cassert_always_perror(fseek(self->data, 0, SEEK_SET) == 0 , "");  /* same as rewind(f); */
 
     return fsize;
 }
 
 size_t
 io_file_read(File* self, char buf[], size_t buf_size) {
-    cassert(self);
+    cassert(self && self->data);
     cassert(buf);
     cassert(buf_size > 0);
 
     size_t fsize = io_file_size(self);
     size_t read_amount = MIN(buf_size, fsize);
 
-    size_t read_size = fread(buf, sizeof(buf[0]), read_amount, self);
-    cassert_always_perror(ferror(self) == 0, "");
+    size_t read_size = fread(buf, sizeof(buf[0]), read_amount, self->data);
+    cassert_always_perror(ferror(self->data) == 0, "");
 
     return read_size;
 }
 
 size_t
 io_file_write(File* self, char buf[], size_t buf_size) {
-    cassert(self);
+    cassert(self && self->data);
     cassert(buf);
     cassert(buf_size > 0);
 
-    size_t write_size = fwrite(buf, sizeof(buf[0]), buf_size, self);
-    cassert_always_perror(ferror(self) == 0, "");
+    size_t write_size = fwrite(buf, sizeof(buf[0]), buf_size, self->data);
+    cassert_always_perror(ferror(self->data) == 0, "");
 
     return write_size;
 }
 
 void
-io_file_close(File** self) {
-    cassert(self && *self);
-    cassert(fclose(*self) == 0);
+io_file_close(File* self) {
+    cassert(self && self->data);
+    cassert(fclose(self->data) == 0);
 
-    *self = NULL;
+    self->data = NULL;
 }
 
 void

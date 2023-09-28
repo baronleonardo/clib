@@ -5,7 +5,9 @@
 
 /// @brief you can always cast 'Array' to anytype you like
 ///        and use it as oridinary heap allocated array
-typedef void Array;
+typedef struct {
+    void* data;
+} Array;
 
 /// @brief create an array with capacity of 1, and element_size
 ///        the meta data will be create followed by the data itself
@@ -16,9 +18,10 @@ typedef void Array;
 ///                                        ^
 ///                                        | user's pointer
 ///        </pre>
+///        [NOTE: always pass the created array by reference, don't ever pass it with value]
 /// @param element_size 
 /// @return 
-Array*
+Array
 array_create(size_t element_size);
 
 
@@ -26,7 +29,7 @@ array_create(size_t element_size);
 /// @param element_size 
 /// @param capacity maximum number of elements to be allocated, minimum capacity is 1
 /// @return 
-Array*
+Array
 array_create_with_capacity(size_t element_size, size_t capacity);
 
 
@@ -64,7 +67,7 @@ array_get_capacity(Array* self);
 /// @param self address of self
 /// @param new_capacity 
 void
-array_set_capacity(Array** self, size_t new_capacity);
+array_set_capacity(Array* self, size_t new_capacity);
 
 
 /// @brief get elemet_size in bytes
@@ -79,7 +82,7 @@ array_get_element_size(Array* self);
 /// @param element if you want to push literals (example: 3, 5 or 10 ...)
 ///                array_push(array, &(int){3});
 void
-array_push(Array** self, const void* element);
+array_push(Array* self, const void* element);
 
 
 /// @brief pop one element from the end
@@ -110,6 +113,6 @@ array_remove_range(Array* self, size_t start_index, size_t range_len);
 /// @brief destroy the array from the memory
 /// @param self 
 void
-array_destroy(Array** self);
+array_destroy(Array* self);
 
 #endif // ARRAY_H

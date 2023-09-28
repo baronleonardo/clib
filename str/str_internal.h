@@ -16,13 +16,12 @@ typedef struct {
 
 static inline StrMeta*
 str_internal_get_meta(const Str* self) {
-    cassert(self);
-    return (&((StrMeta*)(self))[-1]);
+    return (&((StrMeta*)(self->data))[-1]);
 }
 
-static inline Str*
+static inline char*
 str_internal_get_data(const StrMeta* meta) {
-    return (Str*)(&(meta[1]));
+    return (char*)(&(meta[1]));
 }
 
 static inline char*
@@ -36,8 +35,8 @@ str_internal_search(Str* self, const char* cstring, size_t max_len, StrMeta** re
         *return_cstring_len = cstring_len;
 
         for(size_t str_counter = 0; str_counter < meta->len; ++str_counter) {
-            if(memcmp(&self[str_counter], cstring, cstring_len) == 0) {
-                return &self[str_counter];
+            if(memcmp(&(self->data)[str_counter], cstring, cstring_len) == 0) {
+                return &(self->data)[str_counter];
             }
         }
     }
